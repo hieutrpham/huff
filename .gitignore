@@ -1,0 +1,15 @@
+# ignore everything
+*
+
+# whitelist directory
+!*/
+
+# whitelist
+!*.c
+!*.h
+
+# whitelist makefile
+!Makefile
+
+# others
+!.gitignore
