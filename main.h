@@ -48,3 +48,7 @@ void print_list(Node *root);
 Node *create_new_node(c_freq v);
 void queue(Queue *q, Node *n);
 Node* dequeue(Queue *q);
+bool exist(char c, hist_arr hist_a);
+void populate_table(char *buf, hist_arr *freq_table);
+void print_table(hist_arr table);
+int compar(const void *one, const void *two);
