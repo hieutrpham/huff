@@ -9,6 +9,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <stdbool.h>
+#include <assert.h>
 
 #define MAX_COUNT 256
 
@@ -26,6 +27,16 @@ typedef struct {
 } c_freq;
 
 typedef struct {
-	c_freq hist[MAX_COUNT];
+	c_freq items[MAX_COUNT];
 	size_t count;
 } hist_arr;
+
+typedef struct Node {
+	c_freq value;
+	struct Node *next;
+	struct Node *prev;
+} Node;
+
+Node *build_queue(hist_arr freq_table);
+void free_list(Node *root);
+void print_list(Node *root);

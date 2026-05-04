@@ -2,16 +2,16 @@
 
 void print_table(hist_arr table) {
 	for (int i = 0; i < table.count; ++i) {
-		if (table.hist[i].c != '\n')
-			printf("char: %c, freq: %zu\n", table.hist[i].c, table.hist[i].freq);
+		if (table.items[i].c != '\n') // skip new line since it will mess up the stdout
+			printf("char: %c, freq: %zu\n", table.items[i].c, table.items[i].freq);
 		else
-			printf("new line freq: %zu\n", table.hist[i].freq);
+			printf("new line freq: %zu\n", table.items[i].freq);
 	}
 }
 
 bool exist(char c, hist_arr hist_a) {
 	for (int i = 0; i < hist_a.count; ++i) {
-		if (hist_a.hist[i].c == c)
+		if (hist_a.items[i].c == c)
 			return true;
 	}
 	return false;
@@ -44,8 +44,6 @@ int main(int ac, char **av) {
 		return READ_ERR;
 	}
 
-	printf("file %s contains: %s\n", file_name, buf);
-
 	struct stat fs;
 	int file_stat = stat(file_name, &fs);
 	if (file_stat < 0) {
@@ -59,22 +57,25 @@ int main(int ac, char **av) {
 	for (int i = 0; buf[i]; ++i) {
 		if (exist(buf[i], freq_table)) {
 			for (int j = 0; j < freq_table.count; ++j) {
-				if (freq_table.hist[j].c == buf[i])
-					freq_table.hist[j].freq++;
+				if (freq_table.items[j].c == buf[i])
+					freq_table.items[j].freq++;
 			}
 		}
 		else
-			freq_table.hist[freq_table.count++] = (c_freq){.c = buf[i], .freq = 1};
+			freq_table.items[freq_table.count++] = (c_freq){.c = buf[i], .freq = 1};
 	}
 
 	// NOTE: sort the frequency table descendingly
-	qsort(freq_table.hist, freq_table.count, sizeof(freq_table.hist[0]), compar);
+	qsort(freq_table.items, freq_table.count, sizeof(freq_table.items[0]), compar);
 
-	printf("-------------------------------\n");
-	print_table(freq_table);
+	// printf("-------------------------------\n");
+	// print_table(freq_table);
 
 	// TODO: implement a priority queue
 	// * linked list version:
 	// * loop the freq_table again and create a note for each histogram
+	Node *queue = build_queue(freq_table);
+	print_list(queue);
+	free_list(queue);
 	close(file_fd);
 }
