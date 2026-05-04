@@ -1,4 +1,5 @@
 #include "main.h"
+#include <assert.h>
 
 Node *create_new_node(c_freq v) {
 	Node *new_node = malloc(sizeof(*new_node));
@@ -8,31 +9,63 @@ Node *create_new_node(c_freq v) {
 	}
 	new_node->value = v;
 	new_node->next = NULL;
-	new_node->prev = NULL;
 	return new_node;
 }
 
-// build the linked list given the frequency table
+// linked list structure:
 /*
  *  ------------       ------------ 
  * |value: |c   |     |value: |c   |
  * |       |freq|  -> |       |freq|
  * |Node* next  |     |Node* next  |
- * |Node* prev  |     |Node* prev  |
  *  ------------       ------------ 
+ *
+ * Queue structure:
+ * Node *back -> this is the root of the linked list
+ * Node *front -> this is the end of the linked list
+ *
 */
-Node *build_queue(hist_arr freq_table) {
+
+// this function builds the first queue to be used in Huffman algo.
+// it takes an already sorted frequency table
+Queue *build_queue(hist_arr freq_table) {
+	Queue *q = malloc(sizeof(*q));
+	if (!q) {
+		fprintf(stderr, "ERR: malloc\n");
+		exit(MALLOC_ERR);
+	}
+
 	if (freq_table.count == 0)
 		return NULL;
-	Node *root = create_new_node(freq_table.items[0]);
-	Node *temp = root;
+	q->back = create_new_node(freq_table.items[0]);
+	Node *temp = q->back;
 	for (int i = 1; i < freq_table.count; ++i) {
 		Node* new = create_new_node(freq_table.items[i]);
-		new->prev = temp;
 		temp->next = new;
 		temp = new;
 	}
-	return root;
+	q->front = temp;
+	return q;
+}
+
+void queue(Queue *q, Node *n) {
+	assert(q);
+	assert(n);
+	Node *back = q->back;
+	n->next = back;
+	q->back = n;
+}
+
+Node* dequeue(Queue *q) {
+	if (!q)
+		return NULL;
+	Node *f = q->front;
+	Node *temp = q->back;
+	while (temp && temp->next != f) {
+		temp = temp->next;
+	}
+	q->front = temp;
+	return f;
 }
 
 void free_list(Node *root) {
@@ -45,22 +78,19 @@ void free_list(Node *root) {
 	}
 }
 
+void free_queue(Queue *q) {
+	free_list(q->back);
+	free(q);
+}
+
 void print_list(Node *root) {
 	while (root) {
-		Node *prev = root->prev;
-		if (prev) {
-			printf("current node: (%d:%zu) -- ", root->value.c, root->value.freq);
-			printf("previous node: (%d:%zu)\n", prev->value.c, prev->value.freq);
-		}
-		printf("current node: (%d:%zu)\n", root->value.c, root->value.freq);
+		printf("current node: (%c:%zu)\n", root->value.c, root->value.freq);
 		root = root->next;
 	}
 }
 
 #if 0
 int main() {
-	Node *n = create_new_node((c_freq){.c = 'h', .freq = 2});
-	printf("char: %c, freq: %zu\n", n->value.c, n->value.freq);
-	free(n);
 }
 #endif

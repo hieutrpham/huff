@@ -34,9 +34,17 @@ typedef struct {
 typedef struct Node {
 	c_freq value;
 	struct Node *next;
-	struct Node *prev;
 } Node;
 
-Node *build_queue(hist_arr freq_table);
+typedef struct Queue {
+	Node *back;
+	Node *front;
+} Queue;
+
+Queue *build_queue(hist_arr freq_table);
 void free_list(Node *root);
+void free_queue(Queue *q);
 void print_list(Node *root);
+Node *create_new_node(c_freq v);
+void queue(Queue *q, Node *n);
+Node* dequeue(Queue *q);
