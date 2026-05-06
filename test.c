@@ -76,9 +76,10 @@ int main() {
 		print_queue(*q);
 
 		Node *new1 = create_new_node((c_freq){.c = '#', .freq = 201});
-		assert(q->back->value.c == 'o');
+		assert(q->back->value.c == 'j');
 		assert(q->back->value.freq == 100);
 		enqueue(q, new1);
+		print_queue(*q);
 		assert(q->back->value.c == '#');
 		assert(q->back->value.freq == 201);
 		Node *f = dequeue(q);
