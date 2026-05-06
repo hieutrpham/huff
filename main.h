@@ -37,6 +37,12 @@ typedef struct Node {
 	struct Node *prev;
 } Node;
 
+typedef struct TreeNode {
+	struct TreeNode *l;
+	struct TreeNode *r;
+	size_t weight;
+} TreeNode;
+
 typedef struct Queue {
 	Node *back;
 	Node *front;
@@ -55,3 +61,5 @@ void populate_table(char *buf, hist_arr *freq_table);
 void print_table(hist_arr table);
 int compar(const void *one, const void *two);
 Queue *init_queue();
+void print_queue(const Queue *queue);
+bool is_empty(Queue *q);

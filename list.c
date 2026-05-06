@@ -122,3 +122,26 @@ void print_list(Node *root) {
 		root = root->next;
 	}
 }
+
+void print_queue(const Queue *queue) {
+	Node *n = queue->back;
+	if (queue->len == 0) {
+		printf("Queue: [ so empty ]");
+		return;
+	}
+
+	printf("Queue: ");
+	while (n) {
+		if (n->next)
+			printf("(%d:%zu) -> ", n->value.c, n->value.freq);
+		else
+			printf("(%d:%zu)", n->value.c, n->value.freq);
+		n = n->next;
+	}
+	printf("\n");
+	fflush(stdout);
+}
+
+bool is_empty(Queue *q) {
+	return q->len == 0;
+}

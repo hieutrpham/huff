@@ -7,20 +7,6 @@ c_freq make_freq_test(int c, int freq) {
 	return (c_freq){.c = c, .freq = freq};
 }
 
-void print_queue(Queue queue) {
-	Node *n = queue.back;
-	printf("Queue: ");
-	while (n) {
-		if (n->next)
-			printf("(%c:%zu) -> ", n->value.c, n->value.freq);
-		else
-			printf("(%c:%zu)", n->value.c, n->value.freq);
-		n = n->next;
-	}
-	printf("\n");
-	fflush(stdout);
-}
-
 int main() {
 	{
 		Queue *q = init_queue();
@@ -67,19 +53,16 @@ int main() {
 		populate_table(buf, &freq_table);
 		assert(freq_table.count > 0);
 		Queue *q = build_queue_from_table(freq_table);
-		print_queue(*q);
 		assert(q->back->value.c == 'o');
 		assert(q->front->value.c == 'u');
 
 		Node *new = create_new_node((c_freq){.c = 'j', .freq = 100});
 		enqueue(q, new);
-		print_queue(*q);
 
 		Node *new1 = create_new_node((c_freq){.c = '#', .freq = 201});
 		assert(q->back->value.c == 'j');
 		assert(q->back->value.freq == 100);
 		enqueue(q, new1);
-		print_queue(*q);
 		assert(q->back->value.c == '#');
 		assert(q->back->value.freq == 201);
 		Node *f = dequeue(q);
@@ -88,5 +71,5 @@ int main() {
 		assert(f1->value.c == 'i');
 		free_queue(q);
 	}
-	fprintf(stderr, "LOG: all tests passed!\n");
+	fprintf(stderr, "LOG: all test_queue passed!\n");
 }
