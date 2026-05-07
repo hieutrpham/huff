@@ -13,35 +13,44 @@ int main() {
 		Node *new = create_new_node(make_freq_test('o', 100));
 		Node *new1 = create_new_node(make_freq_test('#', 200));
 		assert(new->next == NULL);
-		enqueue(q, new);
-		assert(q->back->value.c == 'o');
-		assert(q->back->value.freq == 100);
-		assert(q->back->next == NULL);
+		enqueue_node(q, new);
+		Node *back = q->back;
+		Node *front = q->front;
+		assert(back->value.c == 'o');
+		assert(back->value.freq == 100);
+		assert(back->next == NULL);
 
-		assert(q->front->value.c == 'o');
-		assert(q->front->value.freq == 100);
-		assert(q->front->next == NULL);
+		assert(front->value.c == 'o');
+		assert(front->value.freq == 100);
+		assert(front->next == NULL);
 
-		enqueue(q, new1);
-		assert(q->back->value.c == '#');
-		assert(q->back->value.freq == 200);
-		assert(q->front->value.c == 'o');
-		assert(q->front->value.freq == 100);
+		enqueue_node(q, new1);
+		back = q->back;
+		front = q->front;
+		assert(back->value.c == '#');
+		assert(back->value.freq == 200);
+		assert(front->value.c == 'o');
+		assert(front->value.freq == 100);
 
-		// i -> # -> o
 		Node *n = create_new_node(make_freq_test('i', 300));
-		enqueue(q, n);
-		assert(q->back->value.c == 'i');
+		enqueue_node(q, n);
+		back = q->back;
+		front = q->front;
+		assert(back->value.c == 'i');
 
-		Node *f = dequeue(q);
+		Node *f = dequeue_node(q);
+		back = q->back;
+		front = q->front;
 		// q has only 1 node left
 		assert(f->value.c == 'o');
-		assert(q->front->value.c == '#');
-		assert(q->back->value.c == 'i');
-		assert(q->front->next == NULL);
-		Node *f1 = dequeue(q);
+		assert(front->value.c == '#');
+		assert(back->value.c == 'i');
+		assert(front->next == NULL);
+		Node *f1 = dequeue_node(q);
+		back = q->back;
+		front = q->front;
 		assert(f1->value.c == '#');
-		assert(q->front->value.c == 'i');
+		assert(front->value.c == 'i');
 		free(f);
 		free(f1);
 		// free(q);
@@ -53,21 +62,27 @@ int main() {
 		populate_table(buf, &freq_table);
 		assert(freq_table.count > 0);
 		Queue *q = build_queue_from_table(freq_table);
-		assert(q->back->value.c == 'o');
-		assert(q->front->value.c == 'u');
+		Node *back = q->back;
+		Node *front = q->front;
+		assert(back->value.c == 'o');
+		assert(front->value.c == 'u');
 
 		Node *new = create_new_node((c_freq){.c = 'j', .freq = 100});
-		enqueue(q, new);
+		enqueue_node(q, new);
+		back = q->back;
+		front = q->front;
 
 		Node *new1 = create_new_node((c_freq){.c = '#', .freq = 201});
-		assert(q->back->value.c == 'j');
-		assert(q->back->value.freq == 100);
-		enqueue(q, new1);
-		assert(q->back->value.c == '#');
-		assert(q->back->value.freq == 201);
-		Node *f = dequeue(q);
+		assert(back->value.c == 'j');
+		assert(back->value.freq == 100);
+		enqueue_node(q, new1);
+		back = q->back;
+		front = q->front;
+		assert(back->value.c == '#');
+		assert(back->value.freq == 201);
+		Node *f = dequeue_node(q);
 		assert(f->value.c == 'u');
-		Node *f1 = dequeue(q);
+		Node *f1 = dequeue_node(q);
 		assert(f1->value.c == 'i');
 		free_queue(q);
 	}

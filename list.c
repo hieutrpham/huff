@@ -39,7 +39,7 @@ Queue *build_queue_from_table(hist_arr freq_table) {
 	Queue *q = init_queue();
 	for (int i = freq_table.count - 1; i >= 0; --i) {
 		Node *n = create_new_node(freq_table.items[i]);
-		enqueue(q, n);
+		enqueue_node(q, n);
 	}
 	return q;
 }
@@ -53,11 +53,10 @@ Queue *init_queue() {
 	return q;
 }
 
-void enqueue(Queue *q, Node *n) {
+void enqueue_node(Queue *q, Node *n) {
 	assert(n);
 
-	// if queue is empty both front and back points to the new node
-	if (q->len == 0) {
+	if (is_empty(q)) {
 		q->back = n;
 		q->front = n;
 		q->len++;
@@ -73,7 +72,7 @@ void enqueue(Queue *q, Node *n) {
 	q->len++;
 }
 
-Node* dequeue(Queue *q) {
+Node* dequeue_node(Queue *q) {
 	assert(q);
 	assert(q->len > 0);
 	Node *front = q->front;
@@ -92,7 +91,7 @@ Node* dequeue(Queue *q) {
 
 	Node *new_front = front->prev;
 	q->front = new_front;
-	q->front->next = NULL;
+	new_front->next = NULL;
 	q->len--;
 	return front;
 }

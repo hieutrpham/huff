@@ -28,7 +28,6 @@ int main(int ac, char **av) {
 		return STAT_ERR;
 	}
 
-	// NOTE: getting the frequency table
 	hist_arr freq_table = {0};
 	populate_table(buf, &freq_table);
 	// print_table(freq_table);
