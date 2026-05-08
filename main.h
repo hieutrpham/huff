@@ -65,3 +65,4 @@ int compar(const void *one, const void *two);
 Queue *init_queue();
 void print_queue(const Queue *queue);
 bool is_empty(Queue *q);
+TreeNode *build_huffman_tree(Queue *initial, Queue* combined);

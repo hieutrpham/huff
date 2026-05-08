@@ -36,53 +36,6 @@ int main(int ac, char **av) {
 	Queue *combine_q = init_queue();
 	print_queue(initial_q);
 
-	/*
-	* 1 iter: sum 18
-		* initial q: 3 -> 2 -> 2 -> 1 -> 1-> 1-> 1-> |1 -> 1|
-		* combine_q: empty
-	* 2 iter:
-		* initial q: 3 -> 2 -> 2 -> 1 -> 1-> |1 -> 1|
-		* combine_q: 2
-	*               / \
-	*               1 1
-	* 3 iter:
-		* initial q: 3 -> 2 -> 2 -> |1 -> 1|
-		* combine_q: 2 -> 2
-	*               / \  / \
-	*               1 1  1 1
-	* 4 iter:
-		* initial q: 3 -> 2 -> 2
-		* combine_q: 2 -> 2 -> 2
-	*               / \  / \  / \
-	*               1 1  1 1  1 1
-	* 5 iter:
-		* initial q: 3 -> 2
-		* combine_q: 4 -> 2 -> 2
-		            / \
-		           2   2
-	*             / \ / \
-	*             1 1 1 1
-	* 6 iter:
-		* initial q: 3
-		* combine_q: 4 -> 4 -> 2
-		                 / \
-		                2   2
-	*                  / \ / \
-	*                  1 1 1 1
-	* 7 iter:
-		* initial q: empty
-		* combine_q: 5 -> 4 -> 4
-		                 / \
-		                2   2
-	*                  / \ / \
-	*                  1 1 1 1
-	* 8 iter:
-		* initial q: empty
-		* combine_q: 8 -> 5
-		                 / \
-		                2   2
-	*                  / \ / \
-	*                  1 1 1 1
-	*/
+	TreeNode *tree = build_huffman_tree(initial_q, combine_q);
 	close(file_fd);
 }

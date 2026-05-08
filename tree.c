@@ -3,12 +3,12 @@
 
 TreeNode *init_tree_node() {
 	TreeNode *n = malloc(sizeof(*n));
+	assert(n);
 	n->l = NULL;
 	n->r = NULL;
 	n->next = NULL;
 	n->prev = NULL;
 	n->weight = 0;
-	assert(n);
 	return n;
 }
 
@@ -56,16 +56,42 @@ TreeNode* dequeue_tree(Queue *q) {
 }
 
 TreeNode *build_huffman_tree(Queue *initial, Queue* combined) {
-	if (is_empty(combined)) {
-		assert(initial->len > 1);
-		TreeNode *new =  init_tree_node();
-		new->l = init_tree_node();
-		new->l->weight = dequeue_tree(initial)->weight;
-		new->r = init_tree_node();
-		new->r->weight = dequeue_tree(initial)->weight;
-		new->weight = new->l->weight + new->r->weight;
-		enqueue_tree(combined, new);
-		if (is_empty(initial))
-			return new;
+	while (initial->len + combined->len >= 2) {
+		// NOTE: if the combined queue is empty, dequeue the 2 nodes from initial queue and add them to the combined queue
+		if (is_empty(combined)) {
+			Node *i_node = dequeue_node(initial);
+
+			TreeNode *new_tree_node = init_tree_node();
+			new_tree_node->l = init_tree_node();
+			new_tree_node->l->weight = i_node->value.freq;
+
+			i_node = dequeue_node(initial);
+
+			new_tree_node->r = init_tree_node();
+			new_tree_node->r->weight = i_node->value.freq;
+			new_tree_node->weight = new_tree_node->l->weight + new_tree_node->r->weight;
+
+			enqueue_tree(combined, new_tree_node);
+			if (is_empty(initial))
+				break;
+		}
+		if (is_empty(initial)) {
+			assert(!is_empty(combined));
+			if (combined->len == 1)
+				break;
+			TreeNode *new_tree_node = init_tree_node();
+			TreeNode *temp = dequeue_tree(combined);
+			new_tree_node->l = init_tree_node();
+			new_tree_node->l->weight = temp->weight;
+
+			temp = dequeue_tree(combined);
+			new_tree_node->r = init_tree_node();
+			new_tree_node->r->weight = temp->weight;
+
+		}
 	}
+
+	assert(is_empty(initial));
+	assert(combined->len + initial->len == 1);
+	return dequeue_tree(combined);
 }
