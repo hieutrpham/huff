@@ -50,44 +50,74 @@ TreeNode* dequeue_tree(Queue *q) {
 
 	TreeNode *new_front = front->prev;
 	q->front = new_front;
-	new_front->next = NULL;
 	q->len--;
 	return front;
 }
 
+void pop_first_two_initial(Queue *initial, Queue* combined) {
+	Node *i_node = dequeue_list(initial);
+	TreeNode *new_tree_node = init_tree_node();
+	new_tree_node->l = init_tree_node();
+	new_tree_node->l->weight = i_node->value.freq;
+
+	i_node = dequeue_list(initial);
+	new_tree_node->r = init_tree_node();
+	new_tree_node->r->weight = i_node->value.freq;
+	new_tree_node->weight = new_tree_node->l->weight + new_tree_node->r->weight;
+
+	enqueue_tree(combined, new_tree_node);
+}
+
+void pop_first_two_combined(Queue *initial, Queue* combined) {
+	TreeNode *new_tree_node = init_tree_node();
+	TreeNode *temp = dequeue_tree(combined);
+	new_tree_node->l = init_tree_node();
+	new_tree_node->l->weight = temp->weight;
+
+	temp = dequeue_tree(combined);
+	new_tree_node->r = init_tree_node();
+	new_tree_node->r->weight = temp->weight;
+	new_tree_node->weight = new_tree_node->l->weight + new_tree_node->r->weight;
+	enqueue_tree(combined, new_tree_node);
+}
+
+void pop_each(Queue *initial, Queue* combined) {
+	TreeNode *new_tree_node = init_tree_node();
+	Node *temp = dequeue_list(initial);
+	new_tree_node->l = init_tree_node();
+	new_tree_node->l->weight = temp->value.freq;
+
+	TreeNode* temp_tree = dequeue_tree(combined);
+	new_tree_node->r = init_tree_node();
+	new_tree_node->r->weight = temp_tree->weight;
+	new_tree_node->weight = new_tree_node->l->weight + new_tree_node->r->weight;
+	enqueue_tree(combined, new_tree_node);
+}
+
 TreeNode *build_huffman_tree(Queue *initial, Queue* combined) {
 	while (initial->len + combined->len >= 2) {
-		// NOTE: if the combined queue is empty, dequeue the 2 nodes from initial queue and add them to the combined queue
 		if (is_empty(combined)) {
-			Node *i_node = dequeue_node(initial);
-
-			TreeNode *new_tree_node = init_tree_node();
-			new_tree_node->l = init_tree_node();
-			new_tree_node->l->weight = i_node->value.freq;
-
-			i_node = dequeue_node(initial);
-
-			new_tree_node->r = init_tree_node();
-			new_tree_node->r->weight = i_node->value.freq;
-			new_tree_node->weight = new_tree_node->l->weight + new_tree_node->r->weight;
-
-			enqueue_tree(combined, new_tree_node);
+			pop_first_two_initial(initial, combined);
 			if (is_empty(initial))
 				break;
 		}
+
 		if (is_empty(initial)) {
-			assert(!is_empty(combined));
+			pop_first_two_combined(initial, combined);
 			if (combined->len == 1)
 				break;
-			TreeNode *new_tree_node = init_tree_node();
-			TreeNode *temp = dequeue_tree(combined);
-			new_tree_node->l = init_tree_node();
-			new_tree_node->l->weight = temp->weight;
+		}
 
-			temp = dequeue_tree(combined);
-			new_tree_node->r = init_tree_node();
-			new_tree_node->r->weight = temp->weight;
+		assert(!is_empty(initial) && !is_empty(combined));
 
+		// NOTE: find 2 nodes with the lowest weights
+		TreeNode *combined_front = combined->front;
+		Node *initial_front = initial->front;
+		if (initial->len > 1 && combined_front->weight >= initial_front->value.freq &&
+		combined_front->weight >= initial_front->prev->value.freq) {
+			pop_first_two_initial(initial, combined);
+		} else {
+			pop_each(initial, combined);
 		}
 	}
 

@@ -39,7 +39,7 @@ Queue *build_queue_from_table(hist_arr freq_table) {
 	Queue *q = init_queue();
 	for (int i = freq_table.count - 1; i >= 0; --i) {
 		Node *n = create_new_node(freq_table.items[i]);
-		enqueue_node(q, n);
+		enqueue_list(q, n);
 	}
 	return q;
 }
@@ -53,7 +53,7 @@ Queue *init_queue() {
 	return q;
 }
 
-void enqueue_node(Queue *q, Node *n) {
+void enqueue_list(Queue *q, Node *n) {
 	assert(n);
 
 	if (is_empty(q)) {
@@ -72,7 +72,7 @@ void enqueue_node(Queue *q, Node *n) {
 	q->len++;
 }
 
-Node* dequeue_node(Queue *q) {
+Node* dequeue_list(Queue *q) {
 	assert(q);
 	assert(q->len > 0);
 	Node *front = q->front;
@@ -91,7 +91,6 @@ Node* dequeue_node(Queue *q) {
 
 	Node *new_front = front->prev;
 	q->front = new_front;
-	new_front->next = NULL;
 	q->len--;
 	return front;
 }
@@ -132,9 +131,9 @@ void print_queue(const Queue *queue) {
 	printf("Queue: ");
 	while (n) {
 		if (n->next)
-			printf("(%d:%zu) -> ", n->value.c, n->value.freq);
+			printf("(%c:%zu) -> ", n->value.c, n->value.freq);
 		else
-			printf("(%d:%zu)", n->value.c, n->value.freq);
+			printf("(%c:%zu)", n->value.c, n->value.freq);
 		n = n->next;
 	}
 	printf("\n");

@@ -1,5 +1,9 @@
 #include "main.h"
 
+c_freq make_freq_test(int c, int freq) {
+	return (c_freq){.c = c, .freq = freq};
+}
+
 int compar(const void *one, const void *two) {
 	const c_freq *c1 = one;
 	const c_freq *c2 = two;
