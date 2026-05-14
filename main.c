@@ -34,8 +34,9 @@ int main(int ac, char **av) {
 
 	Queue *initial_q = build_queue_from_table(freq_table);
 	Queue *combine_q = init_queue();
-	print_queue(initial_q);
+	print_queue(initial_q, "initial");
 
 	TreeNode *tree = build_huffman_tree(initial_q, combine_q);
+	print_tree(tree);
 	close(file_fd);
 }

@@ -121,14 +121,16 @@ void print_list(Node *root) {
 	}
 }
 
-void print_queue(const Queue *queue) {
+void print_queue(const Queue *queue, const char *str)
+{
 	Node *n = queue->back;
 	if (queue->len == 0) {
-		printf("Queue: [ so empty ]");
+		printf("Queue %s: [ so empty ]\n", str);
+		fflush(stdout);
 		return;
 	}
 
-	printf("Queue: ");
+	printf("Queue %s: ", str);
 	while (n) {
 		if (n->next)
 			printf("(%c:%zu) -> ", n->value.c, n->value.freq);

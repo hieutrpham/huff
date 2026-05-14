@@ -94,8 +94,21 @@ void pop_each(Queue *initial, Queue* combined) {
 	enqueue_tree(combined, new_tree_node);
 }
 
-void print_tree(TreeNode* root) {
+void print_tree(TreeNode* root)
+{
 	// TODO:
+	TreeNode *temp = root;
+	if (!temp)
+		return;
+	printf("current node: %zu\n", temp->weight);
+	if (temp->l) {
+		printf("left: ");
+		print_tree(temp->l);
+	}
+	if (temp->r) {
+		printf("right: ");
+		print_tree(temp->r);
+	}
 }
 
 TreeNode *build_huffman_tree(Queue *initial, Queue* combined) {
@@ -112,15 +125,14 @@ TreeNode *build_huffman_tree(Queue *initial, Queue* combined) {
 				break;
 		}
 
-		assert(!is_empty(initial) && !is_empty(combined));
+		assert(!(is_empty(initial) && is_empty(combined)));
 
 		// NOTE: find 2 nodes with the lowest weights
 		TreeNode *combined_front = combined->front;
 		Node *initial_front = initial->front;
-		if (initial->len >= 2 && combined_front->weight >= initial_front->value.freq &&
-		combined_front->weight >= initial_front->prev->value.freq) {
+		if (initial->len >= 2 && combined_front->weight >= initial_front->value.freq && combined_front->weight >= initial_front->prev->value.freq) {
 			pop_first_two_initial(initial, combined);
-		} else {
+		} else if (initial->len > 0 && combined->len > 0) {
 			pop_each(initial, combined);
 		}
 	}
