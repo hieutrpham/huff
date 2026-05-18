@@ -1,4 +1,14 @@
-# [Huffman Coding](https://en.wikipedia.org/wiki/Huffman_coding#Compression)
+# Project Overview: Huffman compression in C
+* Reference: [Huffman Coding](https://en.wikipedia.org/wiki/Huffman_coding#Compression)
+
+# Implementation Steps
+- [x] Implement frequency table of encoded characters
+- [x] Implement linked list and common operations
+- [x] Implement Queue based on linked list
+- [x] Generate Huffman Tree
+- [ ] Visualize Tree using graphviz
+- [ ] Decompression
+- [ ] Extend compression and decompression to directories and handle file permissions
 
 # Steps
 
