@@ -22,6 +22,12 @@ enum {
 };
 
 typedef struct {
+	char *items;
+	int len;
+	int cap;
+} String;
+
+typedef struct {
 	char    c;
 	size_t  freq;
 } c_freq;
@@ -68,3 +74,4 @@ TreeNode  *build_huffman_tree(Queue *initial, Queue* combined);
 c_freq    make_freq_test(int c, int freq);
 void      print_tree(TreeNode* root);
 void      print_queue(const Queue *queue, const char *str);
+void      graph_tree(TreeNode* root);

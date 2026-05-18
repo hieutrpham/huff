@@ -1,5 +1,7 @@
 #include "main.h"
+#include <fcntl.h>
 #include <stdlib.h>
+#include <string.h>
 
 TreeNode *init_tree_node() {
 	TreeNode *n = malloc(sizeof(*n));
@@ -94,19 +96,33 @@ void pop_each(Queue *initial, Queue* combined) {
 	enqueue_tree(combined, new_tree_node);
 }
 
+void graph_tree(TreeNode* root)
+{
+	FILE *file = fopen("tree_test.gv", "w");
+
+	if (!file){
+		fprintf(stderr, "ERR: open file failed\n");
+		exit(OPEN_ERR);
+	}
+
+	char buf[4096] = "lajerowjflsjadfl";
+	int len = strlen(buf);
+
+	fwrite(buf, 1, len, file);
+}
+
 void print_tree(TreeNode* root)
 {
 	// TODO:
 	TreeNode *temp = root;
 	if (!temp)
 		return;
-	printf("current node: %zu\n", temp->weight);
 	if (temp->l) {
-		printf("left: ");
+		printf("left: %zu\n", temp->l->weight);
 		print_tree(temp->l);
 	}
 	if (temp->r) {
-		printf("right: ");
+		printf("right: %zu\n", temp->l->weight);
 		print_tree(temp->r);
 	}
 }

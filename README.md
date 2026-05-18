@@ -1,3 +1,5 @@
+# [Huffman Coding](https://en.wikipedia.org/wiki/Huffman_coding#Compression)
+
 # Steps
 
 * While there is more than one node in the queues:
