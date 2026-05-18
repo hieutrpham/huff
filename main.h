@@ -22,8 +22,8 @@ enum {
 };
 
 typedef struct {
-	char c;
-	size_t freq;
+	char    c;
+	size_t  freq;
 } c_freq;
 
 typedef struct {
@@ -46,25 +46,25 @@ typedef struct TreeNode {
 } TreeNode;
 
 typedef struct Queue {
-	void *back;
-	void *front;
-	size_t len;
+	void    *back;
+	void    *front;
+	size_t  len;
 } Queue;
 
-Queue *build_queue_from_table(hist_arr freq_table);
-void free_list(Node *root);
-void free_queue(Queue *q);
-void print_list(Node *root);
-Node *create_new_node(c_freq v);
-void enqueue_list(Queue *q, Node *n);
-Node* dequeue_list(Queue *q);
-bool exist(char c, hist_arr hist_a);
-void populate_table(char *buf, hist_arr *freq_table);
-void print_table(hist_arr table);
-int compar(const void *one, const void *two);
-Queue *init_queue();
-bool is_empty(Queue *q);
-TreeNode *build_huffman_tree(Queue *initial, Queue* combined);
-c_freq make_freq_test(int c, int freq);
-void print_tree(TreeNode* root);
-void print_queue(const Queue *queue, const char *str);
+Queue     *build_queue_from_table(hist_arr freq_table);
+void      free_list(Node *root);
+void      free_queue(Queue *q);
+void      print_list(Node *root);
+Node      *create_new_node(c_freq v);
+void      enqueue_list(Queue *q, Node *n);
+Node*     dequeue_list(Queue *q);
+bool      exist(char c, hist_arr hist_a);
+void      populate_table(char *buf, hist_arr *freq_table);
+void      print_table(hist_arr table);
+int       compar(const void *one, const void *two);
+Queue     *init_queue();
+bool      is_empty(Queue *q);
+TreeNode  *build_huffman_tree(Queue *initial, Queue* combined);
+c_freq    make_freq_test(int c, int freq);
+void      print_tree(TreeNode* root);
+void      print_queue(const Queue *queue, const char *str);
