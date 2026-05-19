@@ -6,11 +6,15 @@
 TreeNode *init_tree_node() {
 	TreeNode *n = malloc(sizeof(*n));
 	assert(n);
+
+	static size_t tree_node_id = 0;
 	n->l = NULL;
 	n->r = NULL;
 	n->next = NULL;
 	n->prev = NULL;
 	n->weight = 0;
+	tree_node_id++;
+	n->id = tree_node_id;
 	return n;
 }
 
@@ -98,33 +102,52 @@ void pop_each(Queue *initial, Queue* combined) {
 
 void graph_tree(TreeNode* root)
 {
-	FILE *file = fopen("tree_test.gv", "w");
+	printf("graph {\n");
+	printf("node [shape=record]\n");
+	printf("%zu -- {%zu %zu}\n", root->id, root->l->id, root->r->id);
+	print_tree(root, 0);
 
-	if (!file){
-		fprintf(stderr, "ERR: open file failed\n");
-		exit(OPEN_ERR);
-	}
-
-	char buf[4096] = "lajerowjflsjadfl";
-	int len = strlen(buf);
-
-	fwrite(buf, 1, len, file);
+	printf("}\n");
 }
 
-void print_tree(TreeNode* root)
+void print_tree(TreeNode* root, int level)
 {
-	// TODO:
 	TreeNode *temp = root;
+
 	if (!temp)
 		return;
 	if (temp->l) {
-		printf("left: %zu\n", temp->l->weight);
-		print_tree(temp->l);
+#ifdef GRAPH
+			printf("%zu -- {", temp->l->id);
+			if (temp->l->l)
+				printf("%zu ", temp->l->l->id);
+			if (temp->l->r)
+				printf("%zu", temp->l->r->id);
+			printf("}\n");
+			print_tree(temp->l, level + 1);
+#else
+			for (int i = 0; i < level; ++i)
+				printf("    ");
+			printf("id: %zu, left: %zu, level: %d\n", temp->l->id, temp->l->weight, level);
+			print_tree(temp->l, level + 1);
+#endif
 	}
 	if (temp->r) {
-		printf("right: %zu\n", temp->l->weight);
-		print_tree(temp->r);
-	}
+#ifdef GRAPH
+			printf("%zu -- {", temp->r->id);
+			if (temp->r->l)
+				printf("%zu ", temp->r->l->id);
+			if (temp->r->r)
+				printf("%zu", temp->r->r->id);
+			printf("}\n");
+			print_tree(temp->r, level + 1);
+#else
+			for (int i = 0; i < level; ++i)
+				printf("    ");
+			printf("id: %zu, right: %zu, level: %d\n", temp->r->id, temp->r->weight, level);
+			print_tree(temp->r, level + 1);
+#endif
+		}
 }
 
 TreeNode *build_huffman_tree(Queue *initial, Queue* combined) {

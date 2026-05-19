@@ -43,6 +43,5 @@ int main(int ac, char **av) {
 
 	TreeNode *tree = build_huffman_tree(initial_q, combine_q);
 	graph_tree(tree);
-	// print_tree(tree);
 	close(file_fd);
 }

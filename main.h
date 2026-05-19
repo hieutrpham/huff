@@ -12,6 +12,7 @@
 #include <assert.h>
 
 #define MAX_COUNT 256
+#define MAX_LEN 4096
 
 enum {
 	ARG_ERR = 1,
@@ -20,6 +21,11 @@ enum {
 	STAT_ERR,
 	MALLOC_ERR,
 };
+
+typedef struct {
+	char items[MAX_LEN];
+	int len;
+} StaticString;
 
 typedef struct {
 	char *items;
@@ -49,6 +55,7 @@ typedef struct TreeNode {
 	struct TreeNode *next;
 	struct TreeNode *prev;
 	size_t weight;
+	size_t id;
 } TreeNode;
 
 typedef struct Queue {
@@ -72,6 +79,6 @@ Queue     *init_queue();
 bool      is_empty(Queue *q);
 TreeNode  *build_huffman_tree(Queue *initial, Queue* combined);
 c_freq    make_freq_test(int c, int freq);
-void      print_tree(TreeNode* root);
+void      print_tree(TreeNode* root, int level);
 void      print_queue(const Queue *queue, const char *str);
 void      graph_tree(TreeNode* root);

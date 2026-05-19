@@ -35,7 +35,6 @@ int main() {
 		Queue *combined = init_queue();
 		assert(combined->len == 0);
 		TreeNode *tree = build_huffman_tree(initial, combined);
-		print_tree(tree);
 		assert(is_empty(initial));
 		assert(is_empty(combined));
 		assert(tree->weight == 7);

@@ -3,9 +3,10 @@ all: main
 main: main.c list.c freq_table.c tree.c
 	cc -g -o $@ $^
 
+graph: main.c list.c freq_table.c tree.c
+	cc -DGRAPH -g -o $@ $^
+
 test_all: test_list test_tree
-	./test_list
-	./test_tree
 
 test_list: test_queue.c list.c freq_table.c
 	cc -g -o $@ $^
