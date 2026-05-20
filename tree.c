@@ -13,6 +13,7 @@ TreeNode *init_tree_node() {
 	n->next = NULL;
 	n->prev = NULL;
 	n->weight = 0;
+	n->c = 0;
 	tree_node_id++;
 	n->id = tree_node_id;
 	return n;
@@ -63,6 +64,7 @@ TreeNode* dequeue_tree(Queue *q) {
 TreeNode *create_tree_node_from_list_node(Node* n) {
 	TreeNode *tree_n = init_tree_node();
 	tree_n->weight = n->value.freq;
+	tree_n->c = n->value.c;
 	return tree_n;
 }
 
@@ -102,12 +104,16 @@ void pop_each(Queue *initial, Queue* combined) {
 
 void graph_tree(TreeNode* root)
 {
+#ifdef GRAPH
 	printf("graph {\n");
 	printf("node [shape=record]\n");
 	printf("%zu -- {%zu %zu}\n", root->id, root->l->id, root->r->id);
+#endif
 	print_tree(root, 0);
 
+#ifdef GRAPH
 	printf("}\n");
+#endif
 }
 
 void print_tree(TreeNode* root, int level)
@@ -124,11 +130,15 @@ void print_tree(TreeNode* root, int level)
 			if (temp->l->r)
 				printf("%zu", temp->l->r->id);
 			printf("}\n");
+			if (temp->l->c) {
+				printf("%zu ", temp->l->id);
+				printf("[color=red, label=\"{%d|%zu}\"]\n", temp->l->c, temp->l->weight);
+			}
 			print_tree(temp->l, level + 1);
 #else
 			for (int i = 0; i < level; ++i)
 				printf("    ");
-			printf("id: %zu, left: %zu, level: %d\n", temp->l->id, temp->l->weight, level);
+			printf("char: %d, weight: %zu, level: %d\n", temp->l->c, temp->l->weight, level);
 			print_tree(temp->l, level + 1);
 #endif
 	}
@@ -140,11 +150,15 @@ void print_tree(TreeNode* root, int level)
 			if (temp->r->r)
 				printf("%zu", temp->r->r->id);
 			printf("}\n");
+			if (temp->r->c) {
+				printf("%zu ", temp->r->id);
+				printf("[color=red, label=\"{%d|%zu}\"]\n", temp->r->c, temp->r->weight);
+			}
 			print_tree(temp->r, level + 1);
 #else
 			for (int i = 0; i < level; ++i)
 				printf("    ");
-			printf("id: %zu, right: %zu, level: %d\n", temp->r->id, temp->r->weight, level);
+			printf("char: %d, weight: %zu, level: %d\n", temp->r->c, temp->r->weight, level);
 			print_tree(temp->r, level + 1);
 #endif
 		}

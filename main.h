@@ -55,6 +55,7 @@ typedef struct TreeNode {
 	struct TreeNode *next;
 	struct TreeNode *prev;
 	size_t weight;
+	char c;
 	size_t id;
 } TreeNode;
 
