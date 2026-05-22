@@ -59,6 +59,17 @@ typedef struct TreeNode {
 	size_t id;
 } TreeNode;
 
+typedef struct {
+	unsigned char c;
+	unsigned char encoded_str[256];
+	size_t index;
+} Map;
+
+typedef struct {
+	Map maps[256];
+	size_t len;
+} Maps;
+
 typedef struct Queue {
 	void    *back;
 	void    *front;
@@ -81,5 +92,6 @@ bool      is_empty(Queue *q);
 TreeNode  *build_huffman_tree(Queue *initial, Queue* combined);
 c_freq    make_freq_test(int c, int freq);
 void      print_tree(TreeNode* root, int level);
-void      print_queue(const Queue *queue, const char *str);
-void      graph_tree(TreeNode* root);
+void      print_queue(const Queue*, const char*);
+void      graph_tree(TreeNode*);
+void      populate_map(TreeNode*, StaticString*, int);

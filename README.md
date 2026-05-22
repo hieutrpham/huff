@@ -7,6 +7,10 @@
 - [x] Implement Queue based on linked list
 - [x] Generate Huffman Tree
 - [x] Visualize Tree using graphviz
+- [ ] Compression
+    * traverse the tree to create the encoded mapping for each character
+    * encode the file using the mapping
+    * convert the mapped file to binary stream
 - [ ] Decompression
 - [ ] Extend compression and decompression to directories and handle file permissions
 

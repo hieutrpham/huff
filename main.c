@@ -42,6 +42,8 @@ int main(int ac, char **av) {
 	// print_queue(initial_q, "initial");
 
 	TreeNode *tree = build_huffman_tree(initial_q, combine_q);
-	graph_tree(tree);
+	// graph_tree(tree);
+	StaticString str = {0};
+	populate_map(tree, &str, 0);
 	close(file_fd);
 }

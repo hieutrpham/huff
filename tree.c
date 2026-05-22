@@ -164,6 +164,30 @@ void print_tree(TreeNode* root, int level)
 		}
 }
 
+StaticString* append(StaticString* str, char ch)
+{
+	str->items[str->len++] = ch;
+	return str;
+}
+
+// backtracking or DFS doesn't print out all the paths to a node
+// * i need to traverse from the root after each leaf node found
+void populate_map(TreeNode* root, StaticString *str, int level)
+{
+	TreeNode *temp = root;
+
+	if (!temp) {
+		printf("\n");
+		return;
+	}
+	if (temp->c) {
+		printf("(%d): %.*s", temp->c, str->len, str->items);
+		str->len--;
+	}
+	populate_map(temp->l, append(str, '0'), level + 1);
+	populate_map(temp->r, append(str, '1'), level + 1);
+}
+
 TreeNode *build_huffman_tree(Queue *initial, Queue* combined) {
 	while (initial->len + combined->len >= 2) {
 		if (is_empty(combined)) {
