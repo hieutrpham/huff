@@ -1,6 +1,9 @@
 # Project Overview: Huffman compression in C
 * Reference: [Huffman Coding](https://en.wikipedia.org/wiki/Huffman_coding#Compression)
 
+### Huffman Tree generated from `hello world` file
+![example tree](./hello.png)
+
 # Implementation Roadmap
 - [x] Implement frequency table of encoded characters
 - [x] Implement linked list and common operations

@@ -108,6 +108,7 @@ void graph_tree(TreeNode* root)
 	printf("graph {\n");
 	printf("node [shape=record]\n");
 	printf("%zu -- {%zu %zu}\n", root->id, root->l->id, root->r->id);
+	printf("%zu [label=\"%d\"]\n", root->id, root->weight);
 #endif
 	print_tree(root, 0);
 
@@ -132,7 +133,13 @@ void print_tree(TreeNode* root, int level)
 			printf("}\n");
 			if (temp->l->c) {
 				printf("%zu ", temp->l->id);
-				printf("[color=red, label=\"{%d|%zu}\"]\n", temp->l->c, temp->l->weight);
+				if (temp->l->c == '\n')
+					printf("[color=red, label=\"{nl|%zu}\"]\n", temp->l->weight);
+				else
+					printf("[color=red, label=\"{%c|%zu}\"]\n", temp->l->c, temp->l->weight);
+			} else {
+				printf("%zu ", temp->l->id);
+				printf("[label=\"%d\"]\n", temp->l->weight);
 			}
 			print_tree(temp->l, level + 1);
 #else
@@ -150,9 +157,14 @@ void print_tree(TreeNode* root, int level)
 			if (temp->r->r)
 				printf("%zu", temp->r->r->id);
 			printf("}\n");
+			printf("%zu ", temp->r->id);
 			if (temp->r->c) {
-				printf("%zu ", temp->r->id);
-				printf("[color=red, label=\"{%d|%zu}\"]\n", temp->r->c, temp->r->weight);
+				if (temp->r->c == '\n')
+					printf("[color=red, label=\"{nl|%zu}\"]\n", temp->r->weight);
+				else
+					printf("[color=red, label=\"{%c|%zu}\"]\n", temp->r->c, temp->r->weight);
+			} else {
+				printf("[label=\"%d\"]\n", temp->r->weight);
 			}
 			print_tree(temp->r, level + 1);
 #else
