@@ -17,7 +17,7 @@
 - [ ] Decompression
 - [ ] Extend compression and decompression to directories and handle file permissions
 
-# Steps
+# Steps to build the Huffman tree
 
 * While there is more than one node in the queues:
     * Dequeue the two nodes with the lowest weight by examining the fronts of both queues.

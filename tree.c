@@ -199,7 +199,7 @@ void populate_map(TreeNode* root, char *str, Maps *maps, int level)
 		memcpy(&maps->maps[maps->len].encoded_str, str, level);
 		maps->maps[maps->len].c = temp->c;
 		maps->len++;
-		printf("%c: %.*s\n", temp->c, level, str);
+		// printf("%c: %.*s\n", temp->c, level, str);
 	}
 }
 

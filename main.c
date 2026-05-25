@@ -51,5 +51,19 @@ int main(int ac, char **av) {
 	char str[32] = {0};
 	Maps maps = {0};
 	populate_map(tree, str, &maps, 0);
+
+	/*
+	* Iterate the input file byte by byte
+		* for each byte, find its corresponding encode mapping
+		* construct the each bytes according to the encoded_str
+	* first byte `he`: 1<<7|1<<6|1<<5|0<<4|1<<3|1<<2|1<<1|1<<0
+	*/
+	for (int i = 0; i < file_size; ++i) {
+		for (int j = 0; j < maps.len; ++j) {
+			if (buf[i] == maps.maps[j].c) {
+				printf("%c: %s, %lu\n", buf[i], maps.maps[j].encoded_str, strlen(maps.maps[j].encoded_str));
+			}
+		}
+	}
 	close(file_fd);
 }
