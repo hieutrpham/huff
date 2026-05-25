@@ -49,6 +49,7 @@ int main(int ac, char **av) {
 
 	// graph_tree(tree);
 	char str[32] = {0};
-	populate_map(tree, str, 0);
+	Maps maps = {0};
+	populate_map(tree, str, &maps, 0);
 	close(file_fd);
 }

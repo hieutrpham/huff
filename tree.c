@@ -183,20 +183,24 @@ StaticString* append(StaticString* str, char ch)
 }
 
 // Source - https://stackoverflow.com/a/34011193
-void populate_map(TreeNode* root, char *str, int level)
+void populate_map(TreeNode* root, char *str, Maps *maps, int level)
 {
 	TreeNode *temp = root;
 
 	if (temp->l) {
 		str[level] = '0';
-		populate_map(temp->l, str, level + 1);
+		populate_map(temp->l, str, maps, level + 1);
 	}
 	if (temp->r) {
 		str[level] = '1';
-		populate_map(temp->r, str, level + 1);
+		populate_map(temp->r, str, maps, level + 1);
 	}
-	if (temp->c)
+	if (temp->c) {
+		memcpy(&maps->maps[maps->len].encoded_str, str, level);
+		maps->maps[maps->len].c = temp->c;
+		maps->len++;
 		printf("%c: %.*s\n", temp->c, level, str);
+	}
 }
 
 TreeNode *build_huffman_tree(Queue *initial, Queue* combined) {
