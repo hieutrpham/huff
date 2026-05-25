@@ -42,8 +42,13 @@ int main(int ac, char **av) {
 	// print_queue(initial_q, "initial");
 
 	TreeNode *tree = build_huffman_tree(initial_q, combine_q);
+	if (!tree) {
+		fprintf(stderr, "ERR: invalid tree\n");
+		return MALLOC_ERR;
+	}
+
 	// graph_tree(tree);
-	StaticString str = {0};
-	populate_map(tree, &str, 0);
+	char str[32] = {0};
+	populate_map(tree, str, 0);
 	close(file_fd);
 }

@@ -142,6 +142,6 @@ void print_queue(const Queue *queue, const char *str)
 	fflush(stdout);
 }
 
-bool is_empty(Queue *q) {
+boolean is_empty(Queue *q) {
 	return q->len == 0;
 }

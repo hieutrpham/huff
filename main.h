@@ -14,6 +14,8 @@
 #define MAX_COUNT 256
 #define MAX_LEN 4096
 
+typedef char boolean;
+
 enum {
 	ARG_ERR = 1,
 	OPEN_ERR,
@@ -83,15 +85,15 @@ void      print_list(Node *root);
 Node      *create_new_node(c_freq v);
 void      enqueue_list(Queue *q, Node *n);
 Node*     dequeue_list(Queue *q);
-bool      exist(char c, hist_arr hist_a);
+boolean   exist(char c, hist_arr hist_a);
 void      populate_table(char *buf, hist_arr *freq_table);
 void      print_table(hist_arr table);
 int       compar(const void *one, const void *two);
 Queue     *init_queue();
-bool      is_empty(Queue *q);
+boolean   is_empty(Queue *q);
 TreeNode  *build_huffman_tree(Queue *initial, Queue* combined);
 c_freq    make_freq_test(int c, int freq);
 void      print_tree(TreeNode* root, int level);
 void      print_queue(const Queue*, const char*);
 void      graph_tree(TreeNode*);
-void      populate_map(TreeNode*, StaticString*, int);
+void      populate_map(TreeNode* root, char*, int level);

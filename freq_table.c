@@ -34,7 +34,7 @@ void print_table(hist_arr table) {
 	}
 }
 
-bool exist(char c, hist_arr hist_a) {
+boolean exist(char c, hist_arr hist_a) {
 	for (int i = 0; i < hist_a.count; ++i) {
 		if (hist_a.items[i].c == c)
 			return true;
