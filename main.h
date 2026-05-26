@@ -12,7 +12,7 @@
 #include <assert.h>
 
 #define MAX_COUNT 256
-#define MAX_LEN 4096
+#define MAX_LEN 4096*10
 
 typedef char boolean;
 

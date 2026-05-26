@@ -1,4 +1,5 @@
 #include "main.h"
+#include <stdio.h>
 
 size_t get_file_size(const char *file_name) {
 	struct stat fs;
@@ -26,7 +27,12 @@ int main(int ac, char **av) {
 		return OPEN_ERR;
 	}
 
-	char *buf = calloc(file_size, sizeof(*buf));
+	char *buf = calloc(file_size + 1, sizeof(*buf));
+	if (!buf) {
+		fprintf(stderr, "ERR: memory allocation failed\n");
+		return MALLOC_ERR;
+	}
+
 	ssize_t bytes_read = read(file_fd, buf, file_size);
 	if (bytes_read < 0) {
 		fprintf(stderr, "ERR: read file failed\n");
@@ -52,18 +58,41 @@ int main(int ac, char **av) {
 	Maps maps = {0};
 	populate_map(tree, str, &maps, 0);
 
-	/*
-	* Iterate the input file byte by byte
-		* for each byte, find its corresponding encode mapping
-		* construct the each bytes according to the encoded_str
-	* first byte `he`: 1<<7|1<<6|1<<5|0<<4|1<<3|1<<2|1<<1|1<<0
-	*/
+	// TODO: use dynamic array instead
+	StaticString encoded_file = {0};
+
 	for (int i = 0; i < file_size; ++i) {
 		for (int j = 0; j < maps.len; ++j) {
 			if (buf[i] == maps.maps[j].c) {
-				printf("%c: %s, %lu\n", buf[i], maps.maps[j].encoded_str, strlen(maps.maps[j].encoded_str));
+				size_t length = strlen((const char*)maps.maps[j].encoded_str);
+				memcpy(
+					&encoded_file.items[encoded_file.len],
+					maps.maps[j].encoded_str,
+					length);
+				encoded_file.len += length;
 			}
 		}
 	}
+
+	FILE *outfile = fopen("test", "wb");
+	if (!outfile) {
+		printf("%m");
+		return OPEN_ERR;
+	}
+
+	unsigned char byte = 0;
+	for (int i = 0; i < encoded_file.len; i += 8) {
+		for (int j = i; j < i + 8; j++) {
+			char bit = encoded_file.items[j];
+			if (bit == '1')
+				byte |= 1 << (7 - j + i);
+			else if (bit == '0')
+				byte |= 0 << (7 - j + i);
+		}
+		size_t byte_write = fwrite(&byte, 1, 1, outfile);
+		byte = 0;
+	}
+	free(buf);
+	fclose(outfile);
 	close(file_fd);
 }
