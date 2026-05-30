@@ -74,7 +74,19 @@ int main(int ac, char **av) {
 		}
 	}
 
-	FILE *outfile = fopen("test", "wb");
+	char ext[] = "_compressed";
+	size_t compressed_file_size = strlen(file_name) + strlen(ext) + 1;
+	char *compressed_file_name = calloc(compressed_file_size, 1);
+	if (!compressed_file_name)
+	{
+		printf("%m");
+		return MALLOC_ERR;
+	}
+
+	strcpy(compressed_file_name, file_name);
+	strcat(compressed_file_name, ext);
+
+	FILE *outfile = fopen(compressed_file_name, "wb");
 	if (!outfile) {
 		printf("%m");
 		return OPEN_ERR;
@@ -92,7 +104,9 @@ int main(int ac, char **av) {
 		size_t byte_write = fwrite(&byte, 1, 1, outfile);
 		byte = 0;
 	}
+
 	free(buf);
+	free(compressed_file_name);
 	fclose(outfile);
 	close(file_fd);
 }
