@@ -1,17 +1,6 @@
 #include "main.h"
 #include <stdio.h>
 
-size_t get_file_size(const char *file_name) {
-	struct stat fs;
-
-	int file_stat = stat(file_name, &fs);
-	if (file_stat < 0) {
-		fprintf(stderr, "ERR: stat file failed\n");
-		return STAT_ERR;
-	}
-	return fs.st_size;
-}
-
 int main(int ac, char **av) {
 	if (ac != 2) {
 		fprintf(stderr, "Usage: ./main <file_name>\n");
@@ -20,24 +9,7 @@ int main(int ac, char **av) {
 
 	const char *file_name = av[1];
 	size_t file_size = get_file_size(file_name);
-
-	int file_fd = open(file_name, O_RDONLY);
-	if (file_fd < 0) {
-		fprintf(stderr, "ERR: open file failed\n");
-		return OPEN_ERR;
-	}
-
-	char *buf = calloc(file_size + 1, sizeof(*buf));
-	if (!buf) {
-		fprintf(stderr, "ERR: memory allocation failed\n");
-		return MALLOC_ERR;
-	}
-
-	ssize_t bytes_read = read(file_fd, buf, file_size);
-	if (bytes_read < 0) {
-		fprintf(stderr, "ERR: read file failed\n");
-		return READ_ERR;
-	}
+	char *buf = read_entire_file(file_name);
 
 	hist_arr freq_table = {0};
 	populate_table(buf, &freq_table);
@@ -54,33 +26,63 @@ int main(int ac, char **av) {
 	}
 
 	// graph_tree(tree);
-	char str[32] = {0};
 	Maps maps = {0};
-	populate_map(tree, str, &maps, 0);
+	fill_maps(tree, &maps);
+	print_map(&maps);
 
-	// TODO: use dynamic array instead
 	StaticString encoded_file = {0};
+	fill_encoded_file(file_size, &maps, &encoded_file, buf);
 
-	for (int i = 0; i < file_size; ++i) {
-		for (int j = 0; j < maps.len; ++j) {
-			if (buf[i] == maps.maps[j].c) {
-				size_t length = strlen((const char*)maps.maps[j].encoded_str);
+	FILE *outfile = get_compress_file(file_name);
+	compress(&encoded_file, outfile);
+
+	free(buf);
+	fclose(outfile);
+}
+
+void print_map(Maps *maps)
+{
+	for (int i = 0; i < maps->len; ++i)
+	{
+		printf("%d%s\r", maps->maps[i].c, maps->maps[i].encoded_str);
+	}
+}
+
+void fill_maps(TreeNode *tree, Maps *maps)
+{
+	char str[32] = {0};
+	populate_map(tree, str, maps, 0);
+}
+
+void fill_encoded_file(size_t file_size, Maps *maps, StaticString *encoded_file, char *buf)
+{
+	for (int i = 0; i < file_size; ++i)
+	{
+		for (int j = 0; j < maps->len; ++j)
+		{
+			if (buf[i] == maps->maps[j].c)
+			{
+				size_t length = strlen((const char*)maps->maps[j].encoded_str);
 				memcpy(
-					&encoded_file.items[encoded_file.len],
-					maps.maps[j].encoded_str,
+					&encoded_file->items[encoded_file->len],
+					maps->maps[j].encoded_str,
 					length);
-				encoded_file.len += length;
+				encoded_file->len += length;
 			}
 		}
 	}
 
-	char ext[] = "_compressed";
+}
+
+FILE *get_compress_file(const char *file_name)
+{
+	const char ext[] = "_compressed";
 	size_t compressed_file_size = strlen(file_name) + strlen(ext) + 1;
-	char *compressed_file_name = calloc(compressed_file_size, 1);
+	char *compressed_file_name = malloc(compressed_file_size);
 	if (!compressed_file_name)
 	{
 		printf("%m");
-		return MALLOC_ERR;
+		exit(MALLOC_ERR);
 	}
 
 	strcpy(compressed_file_name, file_name);
@@ -89,24 +91,67 @@ int main(int ac, char **av) {
 	FILE *outfile = fopen(compressed_file_name, "wb");
 	if (!outfile) {
 		printf("%m");
-		return OPEN_ERR;
+		exit(OPEN_ERR);
 	}
+	free(compressed_file_name);
+	return outfile;
+}
 
+void compress(StaticString *encoded_file, FILE *outfile)
+{
 	unsigned char byte = 0;
-	for (int i = 0; i < encoded_file.len; i += 8) {
-		for (int j = i; j < i + 8; j++) {
-			char bit = encoded_file.items[j];
+	for (int i = 0; i < encoded_file->len; i += 8)
+	{
+		for (int j = i; j < i + 8; j++)
+		{
+			char bit = encoded_file->items[j];
 			if (bit == '1')
 				byte |= 1 << (7 - j + i);
 			else if (bit == '0')
 				byte |= 0 << (7 - j + i);
 		}
-		size_t byte_write = fwrite(&byte, 1, 1, outfile);
+		fwrite(&byte, 1, 1, outfile);
 		byte = 0;
 	}
+	printf("Compression done!\n");
+}
 
-	free(buf);
-	free(compressed_file_name);
-	fclose(outfile);
+size_t get_file_size(const char *file_name)
+{
+	struct stat fs;
+
+	int file_stat = stat(file_name, &fs);
+	if (file_stat < 0) {
+		fprintf(stderr, "ERR: stat file failed\n");
+		return STAT_ERR;
+	}
+	return fs.st_size;
+}
+
+char *read_entire_file(const char *file_name)
+{
+	size_t file_size = get_file_size(file_name);
+
+	int file_fd = open(file_name, O_RDONLY);
+	if (file_fd < 0)
+	{
+		fprintf(stderr, "ERR: open file failed\n");
+		exit(OPEN_ERR);
+	}
+
+	char *buf = calloc(file_size + 1, sizeof(*buf));
+	if (!buf)
+	{
+		fprintf(stderr, "ERR: memory allocation failed\n");
+		exit(MALLOC_ERR);
+	}
+
+	ssize_t bytes_read = read(file_fd, buf, file_size);
+	if (bytes_read < 0)
+	{
+		fprintf(stderr, "ERR: read file failed\n");
+		exit(READ_ERR);
+	}
 	close(file_fd);
+	return buf;
 }
