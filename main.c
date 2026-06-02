@@ -28,16 +28,36 @@ int main(int ac, char **av) {
 	// graph_tree(tree);
 	Maps maps = {0};
 	fill_maps(tree, &maps);
-	print_map(&maps);
+
+	StaticString str_map = {0};
+	stringify_mapping(&maps, &str_map);
+	// printf("%.*s", str_map.len, str_map.items);
 
 	StaticString encoded_file = {0};
 	fill_encoded_file(file_size, &maps, &encoded_file, buf);
 
 	FILE *outfile = get_compress_file(file_name);
-	compress(&encoded_file, outfile);
+	compress(&str_map, &encoded_file, outfile);
 
 	free(buf);
 	fclose(outfile);
+}
+
+
+
+void stringify_mapping(Maps *maps, StaticString *str_map)
+{
+	for (int i = 0; i < maps->len; ++i)
+	{
+		str_map->items[str_map->len++] = maps->maps[i].c;
+		unsigned char *encoded_str = maps->maps[i].encoded_str;
+		for (int j = 0; encoded_str[j] != '\0'; ++j)
+		{
+			str_map->items[str_map->len] = encoded_str[j];
+			str_map->len++;
+		}
+		str_map->items[str_map->len++] = '\r';
+	}
 }
 
 void print_map(Maps *maps)
@@ -97,8 +117,12 @@ FILE *get_compress_file(const char *file_name)
 	return outfile;
 }
 
-void compress(StaticString *encoded_file, FILE *outfile)
+void compress(StaticString *str_map, StaticString *encoded_file, FILE *outfile)
 {
+	fwrite(str_map->items, 1, str_map->len, outfile);
+	char r = '\r';
+	fwrite(&r, 1, 1, outfile);
+
 	unsigned char byte = 0;
 	for (int i = 0; i < encoded_file->len; i += 8)
 	{
@@ -113,7 +137,7 @@ void compress(StaticString *encoded_file, FILE *outfile)
 		fwrite(&byte, 1, 1, outfile);
 		byte = 0;
 	}
-	printf("Compression done!\n");
+	// printf("Compression done!\n");
 }
 
 size_t get_file_size(const char *file_name)
