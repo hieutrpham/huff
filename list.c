@@ -116,7 +116,7 @@ void free_queue(Queue *q) {
 
 void print_list(Node *root) {
 	while (root) {
-		printf("current node: (%c:%zu)\n", root->value.c, root->value.freq);
+		printf("current node: (%c:%u)\n", root->value.c, root->value.freq);
 		root = root->next;
 	}
 }
@@ -133,9 +133,9 @@ void print_queue(const Queue *queue, const char *str)
 	printf("Queue %s: ", str);
 	while (n) {
 		if (n->next)
-			printf("(%c:%zu) -> ", n->value.c, n->value.freq);
+			printf("(%c:%u) -> ", n->value.c, n->value.freq);
 		else
-			printf("(%c:%zu)", n->value.c, n->value.freq);
+			printf("(%c:%u)", n->value.c, n->value.freq);
 		n = n->next;
 	}
 	printf("\n");

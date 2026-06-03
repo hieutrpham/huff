@@ -30,9 +30,9 @@ void populate_table(char *buf, hist_arr *freq_table) {
 void print_table(hist_arr table) {
 	for (int i = 0; i < table.count; ++i) {
 		if (table.items[i].c != '\n') // skip new line since it will mess up the stdout
-			printf("char: %c, freq: %zu\n", table.items[i].c, table.items[i].freq);
+			printf("char: %c, freq: %u\n", table.items[i].c, table.items[i].freq);
 		else
-			printf("new line freq: %zu\n", table.items[i].freq);
+			printf("new line freq: %u\n", table.items[i].freq);
 	}
 }
 

@@ -37,7 +37,7 @@ typedef struct {
 
 typedef struct {
 	char    c;
-	size_t  freq;
+	uint  freq;
 } c_freq;
 
 typedef struct {
@@ -80,7 +80,7 @@ typedef struct Queue {
 boolean   exist(char, hist_arr*);
 boolean   is_empty(Queue *);
 c_freq    make_freq_test(int, int);
-char      *read_entire_file(const char *);
+char      *read_entire_file(size_t file_size, const char *);
 FILE      *get_compress_file(const char *);
 int       compar(const void *, const void *);
 Node      *create_new_node(c_freq);
@@ -89,7 +89,7 @@ Queue     *build_queue_from_table(hist_arr);
 Queue     *init_queue();
 size_t    get_file_size(const char *);
 TreeNode  *build_huffman_tree(Queue *, Queue*);
-void      compress(StaticString *, StaticString *, FILE *);
+void      compress(hist_arr *, StaticString *, FILE *);
 void      enqueue_list(Queue *, Node *);
 void      fill_encoded_file(size_t, Maps*, StaticString*, char*);
 void      fill_maps(TreeNode *, Maps *);
@@ -104,3 +104,4 @@ void      print_queue(const Queue*, const char*);
 void      print_table(hist_arr);
 void      print_tree(TreeNode*, int);
 void      stringify_mapping(Maps *, StaticString *);
+void      populate_table_from_compressed(const char *buf, hist_arr *freq_table);

@@ -9,10 +9,15 @@ int main(int ac, char **av) {
 
 	const char *file_name = av[1];
 	size_t file_size = get_file_size(file_name);
-	char *buf = read_entire_file(file_name);
+	char *buf = read_entire_file(file_size, file_name);
 
 	hist_arr freq_table = {0};
-	populate_table(buf, &freq_table);
+
+	// NOTE: to be used in compression
+	// populate_table(buf, &freq_table);
+
+	// TODO: populate table to be used in decompression
+	populate_table_from_compressed(buf, &freq_table);
 	// print_table(freq_table);
 
 	Queue *initial_q = build_queue_from_table(freq_table);
@@ -29,42 +34,27 @@ int main(int ac, char **av) {
 	Maps maps = {0};
 	fill_maps(tree, &maps);
 
-	StaticString str_map = {0};
-	stringify_mapping(&maps, &str_map);
-	// printf("%.*s", str_map.len, str_map.items);
-
 	StaticString encoded_file = {0};
 	fill_encoded_file(file_size, &maps, &encoded_file, buf);
 
 	FILE *outfile = get_compress_file(file_name);
-	compress(&str_map, &encoded_file, outfile);
+	compress(&freq_table, &encoded_file, outfile);
 
 	free(buf);
 	fclose(outfile);
 }
 
-
-
-void stringify_mapping(Maps *maps, StaticString *str_map)
+void populate_table_from_compressed(const char *buf, hist_arr *freq_table)
 {
-	for (int i = 0; i < maps->len; ++i)
-	{
-		str_map->items[str_map->len++] = maps->maps[i].c;
-		unsigned char *encoded_str = maps->maps[i].encoded_str;
-		for (int j = 0; encoded_str[j] != '\0'; ++j)
-		{
-			str_map->items[str_map->len] = encoded_str[j];
-			str_map->len++;
-		}
-		str_map->items[str_map->len++] = '\r';
-	}
-}
+	int i = 0;
 
-void print_map(Maps *maps)
-{
-	for (int i = 0; i < maps->len; ++i)
+	while (buf[i] != '\r')
 	{
-		printf("%d%s\r", maps->maps[i].c, maps->maps[i].encoded_str);
+		c_freq *curr = &freq_table->items[freq_table->count];
+		curr->c = buf[i];
+		curr->freq = (uint)buf[i+1];
+		freq_table->count++;
+		i += 5;
 	}
 }
 
@@ -117,11 +107,17 @@ FILE *get_compress_file(const char *file_name)
 	return outfile;
 }
 
-void compress(StaticString *str_map, StaticString *encoded_file, FILE *outfile)
+void compress(hist_arr *freq_table, StaticString *encoded_file, FILE *outfile)
 {
-	fwrite(str_map->items, 1, str_map->len, outfile);
-	char r = '\r';
-	fwrite(&r, 1, 1, outfile);
+	for (int i = 0; i < freq_table->count; ++i)
+	{
+		c_freq curr_item = freq_table->items[i];
+		fwrite(&curr_item.c, 1, 1, outfile);
+		fwrite(&curr_item.freq, sizeof(curr_item.freq), 1, outfile);
+	}
+
+	char sep = '\r';
+	fwrite(&sep, 1, 1, outfile);
 
 	unsigned char byte = 0;
 	for (int i = 0; i < encoded_file->len; i += 8)
@@ -152,10 +148,8 @@ size_t get_file_size(const char *file_name)
 	return fs.st_size;
 }
 
-char *read_entire_file(const char *file_name)
+char *read_entire_file(size_t file_size, const char *file_name)
 {
-	size_t file_size = get_file_size(file_name);
-
 	int file_fd = open(file_name, O_RDONLY);
 	if (file_fd < 0)
 	{
