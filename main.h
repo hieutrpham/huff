@@ -77,7 +77,7 @@ typedef struct Queue {
 	size_t  len;
 } Queue;
 
-boolean   exist(char, hist_arr);
+boolean   exist(char, hist_arr*);
 boolean   is_empty(Queue *);
 c_freq    make_freq_test(int, int);
 char      *read_entire_file(const char *);

@@ -12,9 +12,11 @@ int compar(const void *one, const void *two) {
 
 // populate and sort in descending order
 void populate_table(char *buf, hist_arr *freq_table) {
-	for (int i = 0; buf[i]; ++i) {
-		if (exist(buf[i], *freq_table)) {
-			for (int j = 0; j < freq_table->count; ++j) {
+	for (int i = 0; buf[i]; ++i)
+	{
+		if (exist(buf[i], freq_table)) {
+			for (int j = 0; j < freq_table->count; ++j)
+			{
 				if (freq_table->items[j].c == buf[i])
 					freq_table->items[j].freq++;
 			}
@@ -34,9 +36,10 @@ void print_table(hist_arr table) {
 	}
 }
 
-boolean exist(char c, hist_arr hist_a) {
-	for (int i = 0; i < hist_a.count; ++i) {
-		if (hist_a.items[i].c == c)
+boolean exist(char c, hist_arr *hist_a) {
+	for (int i = 0; i < hist_a->count; ++i)
+	{
+		if (hist_a->items[i].c == c)
 			return true;
 	}
 	return false;
