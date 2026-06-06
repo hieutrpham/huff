@@ -32,13 +32,13 @@ Node *create_new_node(c_freq v) {
 
 // this function builds the first queue to be used in Huffman algo.
 // it takes an already sorted frequency table
-Queue *build_queue_from_table(hist_arr freq_table) {
-	if (freq_table.count == 0)
+Queue *build_queue_from_table(hist_arr *freq_table) {
+	if (freq_table->count == 0)
 		return NULL;
 
 	Queue *q = init_queue();
-	for (int i = freq_table.count - 1; i >= 0; --i) {
-		Node *n = create_new_node(freq_table.items[i]);
+	for (int i = freq_table->count - 1; i >= 0; --i) {
+		Node *n = create_new_node(freq_table->items[i]);
 		enqueue_list(q, n);
 	}
 	return q;
@@ -112,6 +112,7 @@ void free_queue(Queue *q) {
 		return;
 	}
 	free(q);
+	q = NULL;
 }
 
 void print_list(Node *root) {

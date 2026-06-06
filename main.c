@@ -1,52 +1,97 @@
 #include "main.h"
 #include <stdio.h>
 
-int main(int ac, char **av) {
-	if (ac != 2) {
-		fprintf(stderr, "Usage: ./main <file_name>\n");
-		return ARG_ERR;
+int main(int ac, char **av)
+{
+	bool is_decompress = false;
+
+	const char *file_name = NULL;
+	if (ac == 3 && strcmp(av[1], "-d") == 0)
+	{
+		is_decompress = true;
+		file_name = av[2];
+	}
+	else if (ac == 2)
+	{
+		is_decompress = false;
+		file_name = av[1];
+	}
+	else
+	{
+		fprintf(stderr, "ERR: invalid usage");
+		return 1;
 	}
 
-	const char *file_name = av[1];
 	size_t file_size = get_file_size(file_name);
+
+	// BUG: when reading binary file?
 	char *buf = read_entire_file(file_size, file_name);
 
 	hist_arr freq_table = {0};
+	if (!is_decompress)
+	{
+		populate_table(buf, &freq_table);
+		Maps maps = {0};
+		TreeNode *tree = get_tree(&freq_table);
+		fill_maps(tree, &maps);
 
-	// NOTE: to be used in compression
-	// populate_table(buf, &freq_table);
+		StaticString encoded_file = {0};
+		fill_encoded_file(file_size, &maps, &encoded_file, buf);
 
-	// TODO: populate table to be used in decompression
-	populate_table_from_compressed(buf, &freq_table);
-	// print_table(freq_table);
-
-	Queue *initial_q = build_queue_from_table(freq_table);
-	Queue *combine_q = init_queue();
-	// print_queue(initial_q, "initial");
-
-	TreeNode *tree = build_huffman_tree(initial_q, combine_q);
-	if (!tree) {
-		fprintf(stderr, "ERR: invalid tree\n");
-		return MALLOC_ERR;
+		FILE *outfile = build_outfile(file_name, "_compressed");
+		compress(&freq_table, &encoded_file, outfile);
+		fclose(outfile);
+	}
+	else
+	{
+		uint curr_ptr = parse_header(buf, &freq_table);
+		TreeNode *tree = get_tree(&freq_table);
+		FILE *outfile = build_outfile(file_name, "_decompressed");
+		decompress(tree, buf, curr_ptr, outfile);
+		fclose(outfile);
 	}
 
-	// graph_tree(tree);
-	Maps maps = {0};
-	fill_maps(tree, &maps);
-
-	StaticString encoded_file = {0};
-	fill_encoded_file(file_size, &maps, &encoded_file, buf);
-
-	FILE *outfile = get_compress_file(file_name);
-	compress(&freq_table, &encoded_file, outfile);
-
 	free(buf);
-	fclose(outfile);
+	buf = NULL;
 }
 
-void populate_table_from_compressed(const char *buf, hist_arr *freq_table)
+void decompress(TreeNode *tree, const char *buf, uint curr_ptr, FILE *outfile)
 {
-	int i = 0;
+	TreeNode *tmp = tree;
+	while (buf[curr_ptr])
+	{
+		unsigned char c = buf[curr_ptr];
+		for (int i = 0; i < 8; ++i)
+		{
+			if (c & (1 << (7 - i)))
+				tmp = tmp->r;
+			else
+				tmp = tmp->l;
+
+			if (tmp->c)
+			{
+				fwrite(&tmp->c, 1, 1, outfile);
+				tmp = tree;
+			}
+		}
+		curr_ptr+=1;
+	}
+}
+
+TreeNode *get_tree(hist_arr *freq_table)
+{
+	Queue *initial_q = build_queue_from_table(freq_table);
+	Queue *combine_q = init_queue();
+	TreeNode *tree = build_huffman_tree(initial_q, combine_q);
+	if (!tree)
+		ERR(MALLOC_ERR);
+	return tree;
+}
+
+// return pointer to the begin of content body
+uint parse_header(const char *buf, hist_arr *freq_table)
+{
+	uint i = 0;
 
 	while (buf[i] != '\r')
 	{
@@ -56,6 +101,7 @@ void populate_table_from_compressed(const char *buf, hist_arr *freq_table)
 		freq_table->count++;
 		i += 5;
 	}
+	return i + 1;
 }
 
 void fill_maps(TreeNode *tree, Maps *maps)
@@ -84,26 +130,22 @@ void fill_encoded_file(size_t file_size, Maps *maps, StaticString *encoded_file,
 
 }
 
-FILE *get_compress_file(const char *file_name)
+FILE *build_outfile(const char *file_name, const char *ext)
 {
-	const char ext[] = "_compressed";
-	size_t compressed_file_size = strlen(file_name) + strlen(ext) + 1;
-	char *compressed_file_name = malloc(compressed_file_size);
-	if (!compressed_file_name)
-	{
-		printf("%m");
-		exit(MALLOC_ERR);
-	}
+	size_t file_size = strlen(file_name) + strlen(ext) + 1;
+	char *outfile_name = malloc(file_size);
+	if (!outfile_name)
+		ERR(MALLOC_ERR);
 
-	strcpy(compressed_file_name, file_name);
-	strcat(compressed_file_name, ext);
+	strcpy(outfile_name, file_name);
+	strcat(outfile_name, ext);
 
-	FILE *outfile = fopen(compressed_file_name, "wb");
-	if (!outfile) {
-		printf("%m");
-		exit(OPEN_ERR);
-	}
-	free(compressed_file_name);
+	FILE *outfile = fopen(outfile_name, "wb");
+	if (!outfile)
+		ERR(OPEN_ERR);
+
+	free(outfile_name);
+	outfile_name = NULL;
 	return outfile;
 }
 
@@ -141,10 +183,8 @@ size_t get_file_size(const char *file_name)
 	struct stat fs;
 
 	int file_stat = stat(file_name, &fs);
-	if (file_stat < 0) {
-		fprintf(stderr, "ERR: stat file failed\n");
-		return STAT_ERR;
-	}
+	if (file_stat < 0)
+		ERR(STAT_ERR);
 	return fs.st_size;
 }
 
@@ -152,24 +192,15 @@ char *read_entire_file(size_t file_size, const char *file_name)
 {
 	int file_fd = open(file_name, O_RDONLY);
 	if (file_fd < 0)
-	{
-		fprintf(stderr, "ERR: open file failed\n");
-		exit(OPEN_ERR);
-	}
+		ERR(OPEN_ERR);
 
 	char *buf = calloc(file_size + 1, sizeof(*buf));
 	if (!buf)
-	{
-		fprintf(stderr, "ERR: memory allocation failed\n");
-		exit(MALLOC_ERR);
-	}
+		ERR(MALLOC_ERR);
 
 	ssize_t bytes_read = read(file_fd, buf, file_size);
 	if (bytes_read < 0)
-	{
-		fprintf(stderr, "ERR: read file failed\n");
-		exit(READ_ERR);
-	}
+		ERR(READ_ERR);
 	close(file_fd);
 	return buf;
 }

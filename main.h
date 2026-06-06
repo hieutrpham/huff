@@ -12,7 +12,12 @@
 #include <assert.h>
 
 #define MAX_COUNT 256
-#define MAX_LEN 4096*10
+#define MAX_LEN 4096*100
+#define ERR(err)           \
+	do {                   \
+		fprintf(stderr, "%m\n");\
+		exit(err);         \
+	} while(0)
 
 typedef char boolean;
 
@@ -81,11 +86,10 @@ boolean   exist(char, hist_arr*);
 boolean   is_empty(Queue *);
 c_freq    make_freq_test(int, int);
 char      *read_entire_file(size_t file_size, const char *);
-FILE      *get_compress_file(const char *);
 int       compar(const void *, const void *);
 Node      *create_new_node(c_freq);
 Node*     dequeue_list(Queue *);
-Queue     *build_queue_from_table(hist_arr);
+Queue     *build_queue_from_table(hist_arr*);
 Queue     *init_queue();
 size_t    get_file_size(const char *);
 TreeNode  *build_huffman_tree(Queue *, Queue*);
@@ -104,4 +108,7 @@ void      print_queue(const Queue*, const char*);
 void      print_table(hist_arr);
 void      print_tree(TreeNode*, int);
 void      stringify_mapping(Maps *, StaticString *);
-void      populate_table_from_compressed(const char *buf, hist_arr *freq_table);
+uint      parse_header(const char *buf, hist_arr *freq_table);
+TreeNode  *get_tree(hist_arr *freq_table);
+FILE      *build_outfile(const char *file_name, const char *ext);
+void      decompress(TreeNode *tree, const char *buf, const uint curr_ptr, FILE *outfile);
