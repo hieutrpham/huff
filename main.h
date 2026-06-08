@@ -111,4 +111,4 @@ void      stringify_mapping(Maps *, StaticString *);
 uint      parse_header(const char *buf, hist_arr *freq_table);
 TreeNode  *get_tree(hist_arr *freq_table);
 FILE      *build_outfile(const char *file_name, const char *ext);
-void      decompress(TreeNode *tree, const char *buf, const uint curr_ptr, FILE *outfile);
+void      decompress(TreeNode *tree, const char *buf, uint curr_ptr, size_t file_size, FILE *outfile);

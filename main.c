@@ -23,8 +23,6 @@ int main(int ac, char **av)
 	}
 
 	size_t file_size = get_file_size(file_name);
-
-	// BUG: when reading binary file?
 	char *buf = read_entire_file(file_size, file_name);
 
 	hist_arr freq_table = {0};
@@ -47,7 +45,7 @@ int main(int ac, char **av)
 		uint curr_ptr = parse_header(buf, &freq_table);
 		TreeNode *tree = get_tree(&freq_table);
 		FILE *outfile = build_outfile(file_name, "_decompressed");
-		decompress(tree, buf, curr_ptr, outfile);
+		decompress(tree, buf, curr_ptr, file_size, outfile);
 		fclose(outfile);
 	}
 
@@ -55,12 +53,12 @@ int main(int ac, char **av)
 	buf = NULL;
 }
 
-void decompress(TreeNode *tree, const char *buf, uint curr_ptr, FILE *outfile)
+void decompress(TreeNode *tree, const char *buf, uint curr_ptr, size_t file_size, FILE *outfile)
 {
 	TreeNode *tmp = tree;
-	while (buf[curr_ptr])
+	while (curr_ptr < file_size)
 	{
-		unsigned char c = buf[curr_ptr];
+		char c = buf[curr_ptr];
 		for (int i = 0; i < 8; ++i)
 		{
 			if (c & (1 << (7 - i)))
