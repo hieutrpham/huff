@@ -1,4 +1,5 @@
 #include "main.h"
+#include <stdint.h>
 #include <stdio.h>
 
 int main(int ac, char **av)
@@ -23,7 +24,7 @@ int main(int ac, char **av)
 	}
 
 	size_t file_size = get_file_size(file_name);
-	char *buf = read_entire_file(file_size, file_name);
+	uint8_t *buf = read_entire_file(file_size, file_name);
 
 	hist_arr freq_table = {0};
 	if (!is_decompress)
@@ -42,7 +43,7 @@ int main(int ac, char **av)
 	}
 	else
 	{
-		uint curr_ptr = parse_header(buf, &freq_table);
+		uint32_t curr_ptr = parse_header(buf, &freq_table);
 		TreeNode *tree = get_tree(&freq_table);
 		FILE *outfile = build_outfile(file_name, "_decompressed");
 		decompress(tree, buf, curr_ptr, file_size, outfile);
@@ -53,12 +54,12 @@ int main(int ac, char **av)
 	buf = NULL;
 }
 
-void decompress(TreeNode *tree, const char *buf, uint curr_ptr, size_t file_size, FILE *outfile)
+void decompress(TreeNode *tree, const uint8_t *buf, uint curr_ptr, size_t file_size, FILE *outfile)
 {
 	TreeNode *tmp = tree;
 	while (curr_ptr < file_size)
 	{
-		char c = buf[curr_ptr];
+		uint8_t c = buf[curr_ptr];
 		for (int i = 0; i < 8; ++i)
 		{
 			if (c & (1 << (7 - i)))
@@ -87,9 +88,9 @@ TreeNode *get_tree(hist_arr *freq_table)
 }
 
 // return pointer to the begin of content body
-uint parse_header(const char *buf, hist_arr *freq_table)
+uint32_t parse_header(const uint8_t *buf, hist_arr *freq_table)
 {
-	uint i = 0;
+	uint32_t i = 0;
 
 	while (buf[i] != '\r')
 	{
@@ -108,11 +109,11 @@ void fill_maps(TreeNode *tree, Maps *maps)
 	populate_map(tree, str, maps, 0);
 }
 
-void fill_encoded_file(size_t file_size, Maps *maps, StaticString *encoded_file, char *buf)
+void fill_encoded_file(size_t file_size, Maps *maps, StaticString *encoded_file, uint8_t *buf)
 {
-	for (int i = 0; i < file_size; ++i)
+	for (uint i = 0; i < file_size; ++i)
 	{
-		for (int j = 0; j < maps->len; ++j)
+		for (uint j = 0; j < maps->len; ++j)
 		{
 			if (buf[i] == maps->maps[j].c)
 			{
@@ -149,7 +150,7 @@ FILE *build_outfile(const char *file_name, const char *ext)
 
 void compress(hist_arr *freq_table, StaticString *encoded_file, FILE *outfile)
 {
-	for (int i = 0; i < freq_table->count; ++i)
+	for (uint i = 0; i < freq_table->count; ++i)
 	{
 		c_freq curr_item = freq_table->items[i];
 		fwrite(&curr_item.c, 1, 1, outfile);
@@ -159,10 +160,10 @@ void compress(hist_arr *freq_table, StaticString *encoded_file, FILE *outfile)
 	char sep = '\r';
 	fwrite(&sep, 1, 1, outfile);
 
-	unsigned char byte = 0;
-	for (int i = 0; i < encoded_file->len; i += 8)
+	uint8_t byte = 0;
+	for (uint i = 0; i < encoded_file->len; i += 8)
 	{
-		for (int j = i; j < i + 8; j++)
+		for (uint j = i; j < i + 8; j++)
 		{
 			char bit = encoded_file->items[j];
 			if (bit == '1')
@@ -186,13 +187,13 @@ size_t get_file_size(const char *file_name)
 	return fs.st_size;
 }
 
-char *read_entire_file(size_t file_size, const char *file_name)
+uint8_t *read_entire_file(size_t file_size, const char *file_name)
 {
 	int file_fd = open(file_name, O_RDONLY);
 	if (file_fd < 0)
 		ERR(OPEN_ERR);
 
-	char *buf = calloc(file_size + 1, sizeof(*buf));
+	uint8_t *buf = calloc(file_size + 1, sizeof(*buf));
 	if (!buf)
 		ERR(MALLOC_ERR);
 

@@ -1,4 +1,6 @@
 #include "main.h"
+#include <stdint.h>
+#include <sys/types.h>
 
 c_freq make_freq_test(int c, int freq) {
 	return (c_freq){.c = c, .freq = freq};
@@ -11,11 +13,11 @@ int compar(const void *one, const void *two) {
 }
 
 // populate and sort in descending order
-void populate_table(char *buf, hist_arr *freq_table) {
-	for (int i = 0; buf[i]; ++i)
+void populate_table(uint8_t *buf, hist_arr *freq_table) {
+	for (uint i = 0; buf[i]; ++i)
 	{
 		if (exist(buf[i], freq_table)) {
-			for (int j = 0; j < freq_table->count; ++j)
+			for (uint j = 0; j < freq_table->count; ++j)
 			{
 				if (freq_table->items[j].c == buf[i])
 					freq_table->items[j].freq++;
@@ -28,7 +30,7 @@ void populate_table(char *buf, hist_arr *freq_table) {
 }
 
 void print_table(hist_arr table) {
-	for (int i = 0; i < table.count; ++i) {
+	for (uint i = 0; i < table.count; ++i) {
 		if (table.items[i].c != '\n') // skip new line since it will mess up the stdout
 			printf("char: %c, freq: %u\n", table.items[i].c, table.items[i].freq);
 		else
@@ -37,7 +39,7 @@ void print_table(hist_arr table) {
 }
 
 boolean exist(char c, hist_arr *hist_a) {
-	for (int i = 0; i < hist_a->count; ++i)
+	for (uint i = 0; i < hist_a->count; ++i)
 	{
 		if (hist_a->items[i].c == c)
 			return true;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -31,7 +32,7 @@ enum {
 
 typedef struct {
 	char items[MAX_LEN];
-	int len;
+	uint32_t len;
 } StaticString;
 
 typedef struct {
@@ -42,7 +43,7 @@ typedef struct {
 
 typedef struct {
 	char    c;
-	uint  freq;
+	uint32_t  freq;
 } c_freq;
 
 typedef struct {
@@ -62,7 +63,7 @@ typedef struct TreeNode {
 	struct TreeNode *next;
 	struct TreeNode *prev;
 	size_t weight;
-	char c;
+	uint8_t c;
 	size_t id;
 } TreeNode;
 
@@ -85,7 +86,7 @@ typedef struct Queue {
 boolean   exist(char, hist_arr*);
 boolean   is_empty(Queue *);
 c_freq    make_freq_test(int, int);
-char      *read_entire_file(size_t file_size, const char *);
+uint8_t   *read_entire_file(size_t file_size, const char *);
 int       compar(const void *, const void *);
 Node      *create_new_node(c_freq);
 Node*     dequeue_list(Queue *);
@@ -95,20 +96,20 @@ size_t    get_file_size(const char *);
 TreeNode  *build_huffman_tree(Queue *, Queue*);
 void      compress(hist_arr *, StaticString *, FILE *);
 void      enqueue_list(Queue *, Node *);
-void      fill_encoded_file(size_t, Maps*, StaticString*, char*);
+void      fill_encoded_file(size_t, Maps*, StaticString*, uint8_t*);
 void      fill_maps(TreeNode *, Maps *);
 void      free_list(Node *);
 void      free_queue(Queue *);
 void      graph_tree(TreeNode*);
 void      populate_map(TreeNode*, char *, Maps *, int);
-void      populate_table(char *, hist_arr *);
+void      populate_table(uint8_t *, hist_arr *);
 void      print_list(Node *);
 void      print_map(Maps *);
 void      print_queue(const Queue*, const char*);
 void      print_table(hist_arr);
 void      print_tree(TreeNode*, int);
 void      stringify_mapping(Maps *, StaticString *);
-uint      parse_header(const char *buf, hist_arr *freq_table);
+uint32_t  parse_header(const uint8_t *buf, hist_arr *freq_table);
 TreeNode  *get_tree(hist_arr *freq_table);
 FILE      *build_outfile(const char *file_name, const char *ext);
-void      decompress(TreeNode *tree, const char *buf, uint curr_ptr, size_t file_size, FILE *outfile);
+void      decompress(TreeNode *tree, const uint8_t *buf, uint curr_ptr, size_t file_size, FILE *outfile);

@@ -80,7 +80,7 @@ void pop_first_two_initial(Queue *initial, Queue* combined) {
 	enqueue_tree(combined, new_tree_node);
 }
 
-void pop_first_two_combined(Queue *initial, Queue* combined) {
+void pop_first_two_combined(Queue* combined) {
 	TreeNode *new_tree_node = init_tree_node();
 	TreeNode *temp = dequeue_tree(combined);
 	new_tree_node->l = temp;
@@ -215,7 +215,7 @@ TreeNode *build_huffman_tree(Queue *initial, Queue* combined) {
 		}
 
 		if (is_empty(initial)) {
-			pop_first_two_combined(initial, combined);
+			pop_first_two_combined(combined);
 			if (combined->len == 1)
 				break;
 		}
