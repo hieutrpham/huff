@@ -1,10 +1,12 @@
+CFLAGS = -Wall -Werror -Wextra
+
 all: main
 
 main: main.c list.c freq_table.c tree.c
-	cc -g -o $@ $^
+	cc $(CFLAGS) -g -o $@ $^
 
 graph: main.c list.c freq_table.c tree.c
-	cc -DGRAPH -g -o $@ $^
+	cc $(CFLAGS) -DGRAPH -g -o $@ $^
 
 test_all: test_list test_tree
 
