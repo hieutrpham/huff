@@ -95,7 +95,7 @@ uint parse_header(const char *buf, hist_arr *freq_table)
 	{
 		c_freq *curr = &freq_table->items[freq_table->count];
 		curr->c = buf[i];
-		curr->freq = (uint)buf[i+1];
+		curr->freq = buf[i+4]<<24 | buf[i+3]<<16 | buf[i+2]<<8 | buf[i+1];
 		freq_table->count++;
 		i += 5;
 	}
