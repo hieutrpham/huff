@@ -45,7 +45,7 @@ Queue *build_queue_from_table(hist_arr *freq_table) {
 }
 
 Queue *init_queue() {
-	Queue *q = calloc(sizeof(*q), 1);
+	Queue *q = calloc(1, sizeof(*q));
 	assert(q);
 	q->back = NULL;
 	q->front = NULL;

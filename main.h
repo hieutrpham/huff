@@ -16,7 +16,7 @@
 #define MAX_LEN 4096*100
 #define ERR(err)           \
 	do {                   \
-		fprintf(stderr, "%m\n");\
+		fprintf(stderr, "%s:%d:%m\n", __FILE__, __LINE__);\
 		exit(err);         \
 	} while(0)
 
