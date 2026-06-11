@@ -20,7 +20,7 @@ int main(int ac, char **av)
 	else
 	{
 		fprintf(stderr, "ERR: invalid usage");
-		return 1;
+		return ARG_ERR;
 	}
 
 	size_t file_size = get_file_size(file_name);
@@ -203,3 +203,10 @@ uint8_t *read_entire_file(size_t file_size, const char *file_name)
 	close(file_fd);
 	return buf;
 }
+
+void print_map(Maps *maps)
+{
+	for (uint i = 0; i < maps->len; ++i)
+		printf("%c, %s\n", maps->maps[i].c, maps->maps[i].encoded_str);
+}
+
