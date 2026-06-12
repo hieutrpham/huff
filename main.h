@@ -106,7 +106,7 @@ void      populate_table(uint8_t *, hist_arr *);
 void      print_list(Node *);
 void      print_map(Maps *);
 void      print_queue(const Queue*, const char*);
-void      print_table(hist_arr);
+void      print_table(hist_arr*);
 void      print_tree(TreeNode*, int);
 void      stringify_mapping(Maps *, StaticString *);
 uint32_t  parse_header(const uint8_t *buf, hist_arr *freq_table);

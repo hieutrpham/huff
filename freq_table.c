@@ -26,15 +26,16 @@ void populate_table(uint8_t *buf, hist_arr *freq_table) {
 		else
 			freq_table->items[freq_table->count++] = (c_freq){.c = buf[i], .freq = 1};
 	}
+	freq_table->items[freq_table->count++] = (c_freq){.c = '\r', .freq = 1};
 	qsort(freq_table->items, freq_table->count, sizeof(freq_table->items[0]), compar);
 }
 
-void print_table(hist_arr table) {
-	for (uint i = 0; i < table.count; ++i) {
-		if (table.items[i].c != '\n') // skip new line since it will mess up the stdout
-			printf("char: %c, freq: %u\n", table.items[i].c, table.items[i].freq);
+void print_table(hist_arr *table) {
+	for (uint i = 0; i < table->count; ++i) {
+		if (table->items[i].c != '\n') // skip new line since it will mess up the stdout
+			printf("char: %c, freq: %u\n", table->items[i].c, table->items[i].freq);
 		else
-			printf("new line freq: %u\n", table.items[i].freq);
+			printf("new line freq: %u\n", table->items[i].freq);
 	}
 }
 

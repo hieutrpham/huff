@@ -183,6 +183,7 @@ StaticString* append(StaticString* str, char ch)
 }
 
 // Source - https://stackoverflow.com/a/34011193
+// maps is an array of mappings of symbol -> 0101. basically the path to each character symbol in the huffman tree
 void populate_map(TreeNode* root, char *str, Maps *maps, int level)
 {
 	TreeNode *temp = root;
