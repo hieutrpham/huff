@@ -30,8 +30,8 @@ int main(int ac, char **av)
 	if (!is_decompress)
 	{
 		populate_table(buf, &freq_table);
-		Maps maps = {0};
 		TreeNode *tree = get_tree(&freq_table);
+		Maps maps = {0};
 		fill_maps(tree, &maps);
 
 		StaticString encoded_file = {0};
@@ -69,8 +69,15 @@ void decompress(TreeNode *tree, const uint8_t *buf, uint curr_ptr, size_t file_s
 
 			if (tmp->c)
 			{
-				fwrite(&tmp->c, 1, 1, outfile);
-				tmp = tree;
+				if (tmp->c == '\r')
+				{
+					return;
+				}
+				else
+				{
+					fwrite(&tmp->c, 1, 1, outfile);
+					tmp = tree;
+				}
 			}
 		}
 		curr_ptr+=1;
@@ -92,15 +99,17 @@ uint32_t parse_header(const uint8_t *buf, hist_arr *freq_table)
 {
 	uint32_t i = 0;
 
-	while (buf[i] != '\r')
+	while (true)
 	{
+		if (buf[i] == '\r' && buf[i+1] == '\r')
+			break;
 		c_freq *curr = &freq_table->items[freq_table->count];
 		curr->c = buf[i];
 		curr->freq = buf[i+4]<<24 | buf[i+3]<<16 | buf[i+2]<<8 | buf[i+1];
 		freq_table->count++;
 		i += 5;
 	}
-	return i + 1;
+	return i + 2;
 }
 
 void fill_maps(TreeNode *tree, Maps *maps)
@@ -109,6 +118,7 @@ void fill_maps(TreeNode *tree, Maps *maps)
 	populate_map(tree, str, maps, 0);
 }
 
+// encoded_file is an array of 0 and 1 characters that intepret the original file
 void fill_encoded_file(size_t file_size, Maps *maps, StaticString *encoded_file, uint8_t *buf)
 {
 	for (uint i = 0; i < file_size; ++i)
@@ -127,6 +137,24 @@ void fill_encoded_file(size_t file_size, Maps *maps, StaticString *encoded_file,
 		}
 	}
 
+	// add the pseudo EOF
+	for (uint j = 0; j < maps->len; ++j)
+	{
+		if (maps->maps[j].c == '\r')
+		{
+			size_t length = strlen((const char*)maps->maps[j].encoded_str);
+			memcpy(
+				&encoded_file->items[encoded_file->len],
+				maps->maps[j].encoded_str,
+				length);
+			encoded_file->len += length;
+			memcpy(
+				&encoded_file->items[encoded_file->len],
+				maps->maps[j].encoded_str,
+				length);
+			encoded_file->len += length;
+		}
+	}
 }
 
 FILE *build_outfile(const char *file_name, const char *ext)
@@ -158,6 +186,7 @@ void compress(hist_arr *freq_table, StaticString *encoded_file, FILE *outfile)
 	}
 
 	char sep = '\r';
+	fwrite(&sep, 1, 1, outfile);
 	fwrite(&sep, 1, 1, outfile);
 
 	uint8_t byte = 0;
