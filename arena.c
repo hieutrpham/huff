@@ -34,12 +34,6 @@ void *arena_malloc(struct arena* a, uint32_t size)
 {
 	assert(size + a->len < a->cap);
 
-	// TODO: reallocation
-	if (size + a->len >= a->cap)
-	{
-		return NULL;
-	}
-
 	void *mem = &a->items[a->len];
 	a->len += size;
 	return mem;

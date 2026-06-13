@@ -20,7 +20,8 @@
 		exit(err);         \
 	} while(0)
 
-#define ARENA_CAP 1024*1024
+#define ARENA_CAP 1024*1024*512
+#define STRING_CAP 1024;
 
 typedef uint8_t boolean;
 
@@ -39,9 +40,10 @@ struct arena {
 };
 
 typedef struct {
-	char items[MAX_LEN];
+	char *items;
 	uint32_t len;
-} StaticString;
+	uint32_t cap;
+} String;
 
 typedef struct {
 	uint32_t freq;
@@ -96,9 +98,9 @@ Queue         *build_queue_from_table(struct arena *a, hist_arr*);
 Queue         *init_queue(struct arena *a);
 size_t        get_file_size(const char *);
 TreeNode      *build_huffman_tree(struct arena *a, Queue *, Queue*);
-void          compress(hist_arr *, StaticString *, FILE *);
+void          compress(hist_arr *, String *, FILE *);
 void          enqueue_list(Queue *, Node *);
-void          fill_encoded_file(size_t, Maps*, StaticString*, uint8_t*);
+void          fill_encoded_file(size_t, Maps*, String*, uint8_t*);
 void          fill_maps(TreeNode *, Maps *);
 void          free_list(Node *);
 void          free_queue(Queue *);
@@ -110,7 +112,7 @@ void          print_map(Maps *);
 void          print_queue(const Queue*, const char*);
 void          print_table(hist_arr*);
 void          print_tree(TreeNode*, int);
-void          stringify_mapping(Maps *, StaticString *);
+void          stringify_mapping(Maps *, String *);
 uint32_t      parse_header(const uint8_t *buf, hist_arr *freq_table);
 TreeNode      *get_tree(struct arena *a, hist_arr *freq_table);
 FILE          *build_outfile(const char *file_name, const char *ext);
@@ -118,4 +120,6 @@ void          decompress(TreeNode *tree, const uint8_t *buf, uint curr_ptr, size
 struct arena  *arena_init(uint32_t capacity);
 void          arena_destroy(struct arena* a);
 void          *arena_malloc(struct arena* a, uint32_t size);
-struct arena  *get_arena();
+void          string_append(String *str, const char *ext);
+void          string_destroy(String *str);
+String        *string_init(uint32_t size);

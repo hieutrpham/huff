@@ -175,12 +175,6 @@ void print_tree(TreeNode* root, int level)
 		}
 }
 
-StaticString* append(StaticString* str, char ch)
-{
-	str->items[str->len++] = ch;
-	return str;
-}
-
 // Source - https://stackoverflow.com/a/34011193
 // maps is an array of mappings of symbol -> 0101. basically the path to each character symbol in the huffman tree
 void populate_map(TreeNode* root, char *str, Maps *maps, int level)
