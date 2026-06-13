@@ -3,12 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-Node *create_new_node(c_freq v) {
-	Node *new_node = malloc(sizeof(*new_node));
-	if (!new_node) {
-		fprintf(stderr, "ERR: malloc\n");
-		exit(MALLOC_ERR);
-	}
+Node *create_new_node(struct arena *a, c_freq v) {
+	Node *new_node = arena_malloc(a, sizeof(*new_node));
 	new_node->value = v;
 	new_node->next = NULL;
 	new_node->prev = NULL;
@@ -17,12 +13,12 @@ Node *create_new_node(c_freq v) {
 
 // linked list structure:
 /*
- *  ------------       ------------ 
+ *  ------------       ------------
  * |value: |c   |     |value: |c   |
  * |       |freq|  -> |       |freq|
  * |Node* next  |     |Node* next  |
  * |Node* prev  |     |Node* prev  |
- *  ------------       ------------ 
+ *  ------------       ------------
  *
  * Queue structure:
  * Node *back -> this is the root of the linked list
@@ -32,21 +28,20 @@ Node *create_new_node(c_freq v) {
 
 // this function builds the first queue to be used in Huffman algo.
 // it takes an already sorted frequency table
-Queue *build_queue_from_table(hist_arr *freq_table) {
+Queue *build_queue_from_table(struct arena *a, hist_arr *freq_table) {
 	if (freq_table->count == 0)
 		return NULL;
 
-	Queue *q = init_queue();
+	Queue *q = init_queue(a);
 	for (int i = freq_table->count - 1; i >= 0; --i) {
-		Node *n = create_new_node(freq_table->items[i]);
+		Node *n = create_new_node(a, freq_table->items[i]);
 		enqueue_list(q, n);
 	}
 	return q;
 }
 
-Queue *init_queue() {
-	Queue *q = calloc(1, sizeof(*q));
-	assert(q);
+Queue *init_queue(struct arena *a) {
+	Queue *q = arena_malloc(a, sizeof(*q));
 	q->back = NULL;
 	q->front = NULL;
 	q->len = 0;

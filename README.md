@@ -1,5 +1,8 @@
 # Project Overview: Huffman compression in C
-* Reference: [Huffman Coding](https://en.wikipedia.org/wiki/Huffman_coding#Compression)
+
+## Reference:
+* [Wikipedia](https://en.wikipedia.org/wiki/Huffman_coding#Compression)
+* [Stanford](https://web.stanford.edu/class/archive/cs/cs106b/cs106b.1176/assnFiles/assign6/huffman-encoding-supplement.pdf)
 
 ### Huffman Tree generated from `hello world` file
 ![example tree](./hello.png)
@@ -10,11 +13,11 @@
 - [x] Implement Queue based on linked list
 - [x] Generate Huffman Tree
 - [x] Visualize Tree using graphviz
-- [ ] Compression
+- [x] Compression
     * traverse the tree to create the encoded mapping for each character
     * encode the file using the mapping
     * convert the mapped file to binary stream
-- [ ] Decompression
+- [x] Decompression
 - [ ] Extend compression and decompression to directories and handle file permissions
 
 # Steps to build the Huffman tree

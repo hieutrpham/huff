@@ -39,7 +39,7 @@ void print_table(hist_arr *table) {
 	}
 }
 
-boolean exist(char c, hist_arr *hist_a) {
+boolean exist(uint8_t c, hist_arr *hist_a) {
 	for (uint i = 0; i < hist_a->count; ++i)
 	{
 		if (hist_a->items[i].c == c)

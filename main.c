@@ -27,10 +27,11 @@ int main(int ac, char **av)
 	uint8_t *buf = read_entire_file(file_size, file_name);
 
 	hist_arr freq_table = {0};
+	struct arena *a = arena_init(ARENA_CAP);
 	if (!is_decompress)
 	{
 		populate_table(buf, &freq_table);
-		TreeNode *tree = get_tree(&freq_table);
+		TreeNode *tree = get_tree(a, &freq_table);
 		Maps maps = {0};
 		fill_maps(tree, &maps);
 
@@ -44,7 +45,7 @@ int main(int ac, char **av)
 	else
 	{
 		uint32_t curr_ptr = parse_header(buf, &freq_table);
-		TreeNode *tree = get_tree(&freq_table);
+		TreeNode *tree = get_tree(a, &freq_table);
 		FILE *outfile = build_outfile(file_name, "_decompressed");
 		decompress(tree, buf, curr_ptr, file_size, outfile);
 		fclose(outfile);
@@ -52,6 +53,7 @@ int main(int ac, char **av)
 
 	free(buf);
 	buf = NULL;
+	arena_destroy(a);
 }
 
 void decompress(TreeNode *tree, const uint8_t *buf, uint curr_ptr, size_t file_size, FILE *outfile)
@@ -84,11 +86,11 @@ void decompress(TreeNode *tree, const uint8_t *buf, uint curr_ptr, size_t file_s
 	}
 }
 
-TreeNode *get_tree(hist_arr *freq_table)
+TreeNode *get_tree(struct arena *a, hist_arr *freq_table)
 {
-	Queue *initial_q = build_queue_from_table(freq_table);
-	Queue *combine_q = init_queue();
-	TreeNode *tree = build_huffman_tree(initial_q, combine_q);
+	Queue *initial_q = build_queue_from_table(a, freq_table);
+	Queue *combine_q = init_queue(a);
+	TreeNode *tree = build_huffman_tree(a, initial_q, combine_q);
 	if (!tree)
 		ERR(MALLOC_ERR);
 	return tree;
