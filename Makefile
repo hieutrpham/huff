@@ -2,7 +2,7 @@ CFLAGS = -Wall -Werror -Wextra
 
 all: main
 
-main: main.c list.c freq_table.c tree.c
+main: main.c list.c freq_table.c tree.c arena.c
 	cc $(CFLAGS) -g -o $@ $^
 
 graph: main.c list.c freq_table.c tree.c
