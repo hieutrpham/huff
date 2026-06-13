@@ -35,12 +35,12 @@ int main(int ac, char **av)
 		Maps maps = {0};
 		fill_maps(tree, &maps);
 
-		String *encoded_file = arena_malloc(a, sizeof(*encoded_file));
-		encoded_file->items = arena_malloc(a, file_size);
+		String *encoded_file = string_init(STRING_CAP);
 		fill_encoded_file(file_size, &maps, encoded_file, buf);
 
 		FILE *outfile = build_outfile(file_name, "_compressed");
 		compress(&freq_table, encoded_file, outfile);
+		string_destroy(encoded_file);
 		fclose(outfile);
 	}
 	else
@@ -130,12 +130,7 @@ void fill_encoded_file(size_t file_size, Maps *maps, String *encoded_file, uint8
 		{
 			if (buf[i] == maps->maps[j].c)
 			{
-				size_t length = strlen((const char*)maps->maps[j].encoded_str);
-				memcpy(
-					&encoded_file->items[encoded_file->len],
-					maps->maps[j].encoded_str,
-					length);
-				encoded_file->len += length;
+				string_append(encoded_file, maps->maps[j].encoded_str);
 			}
 		}
 	}
@@ -145,17 +140,8 @@ void fill_encoded_file(size_t file_size, Maps *maps, String *encoded_file, uint8
 	{
 		if (maps->maps[j].c == '\r')
 		{
-			size_t length = strlen((const char*)maps->maps[j].encoded_str);
-			memcpy(
-				&encoded_file->items[encoded_file->len],
-				maps->maps[j].encoded_str,
-				length);
-			encoded_file->len += length;
-			memcpy(
-				&encoded_file->items[encoded_file->len],
-				maps->maps[j].encoded_str,
-				length);
-			encoded_file->len += length;
+			string_append(encoded_file, maps->maps[j].encoded_str);
+			string_append(encoded_file, maps->maps[j].encoded_str);
 		}
 	}
 }
@@ -179,7 +165,7 @@ FILE *build_outfile(const char *file_name, const char *ext)
 	return outfile;
 }
 
-void compress(hist_arr *freq_table, st *encoded_file, FILE *outfile)
+void compress(hist_arr *freq_table, String *encoded_file, FILE *outfile)
 {
 	for (uint i = 0; i < freq_table->count; ++i)
 	{

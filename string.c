@@ -33,17 +33,19 @@ void string_destroy(String *str)
 void string_append(String *str, const char *ext)
 {
 	size_t length = strlen(ext);
+	void *new_buffer = NULL;
 
 	if (str->len + length >= str->cap)
 	{
 		while (str->len + length >= str->cap)
 			str->cap *= 2;
-		void *new_buffer = realloc(str->items, str->cap);
+		new_buffer = realloc(str->items, str->cap);
 		str->items = new_buffer;
 		memcpy(&str->items[str->len], ext, length);
 		str->len += length;
 		return;
 	}
+
 	memcpy(&str->items[str->len], ext, length);
 	str->len += length;
 }

@@ -13,15 +13,14 @@
 #include <assert.h>
 
 #define MAX_COUNT 256
-#define MAX_LEN 4096*100
 #define ERR(err)           \
 	do {                   \
 		fprintf(stderr, "%s:%d:%m\n", __FILE__, __LINE__);\
 		exit(err);         \
 	} while(0)
 
-#define ARENA_CAP 1024*1024*512
-#define STRING_CAP 1024;
+#define ARENA_CAP 1024*1024
+#define STRING_CAP 1024
 
 typedef uint8_t boolean;
 
@@ -72,8 +71,8 @@ typedef struct TreeNode {
 } TreeNode;
 
 typedef struct {
-	unsigned char c;
-	unsigned char encoded_str[256];
+	char c;
+	char encoded_str[256];
 } Map;
 
 typedef struct {
