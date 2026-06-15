@@ -13,10 +13,10 @@
 #include <assert.h>
 
 #define MAX_COUNT 256
-#define ERR(err)           \
-	do {                   \
+#define ERR(err)                                          \
+	do {                                                  \
 		fprintf(stderr, "%s:%d:%m\n", __FILE__, __LINE__);\
-		exit(err);         \
+		exit(err);                                        \
 	} while(0)
 
 #define ARENA_CAP 1024*1024
@@ -114,7 +114,7 @@ void          print_tree(TreeNode*, int);
 void          stringify_mapping(Maps *, String *);
 uint32_t      parse_header(const uint8_t *buf, hist_arr *freq_table);
 TreeNode      *get_tree(struct arena *a, hist_arr *freq_table);
-FILE          *build_outfile(const char *file_name, const char *ext);
+FILE          *build_outfile(const char *file_name);
 void          decompress(TreeNode *tree, const uint8_t *buf, uint curr_ptr, size_t file_size, FILE *outfile);
 struct arena  *arena_init(uint32_t capacity);
 void          arena_destroy(struct arena* a);
@@ -122,3 +122,5 @@ void          *arena_malloc(struct arena* a, uint32_t size);
 void          string_append(String *str, const char *ext);
 void          string_destroy(String *str);
 String        *string_init(uint32_t size);
+char          *build_outfile_name(const char *file_name, const char *ext);
+void          report(size_t file_size, size_t outfile_size);

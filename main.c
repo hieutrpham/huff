@@ -1,6 +1,4 @@
 #include "main.h"
-#include <stdint.h>
-#include <stdio.h>
 
 int main(int ac, char **av)
 {
@@ -18,10 +16,7 @@ int main(int ac, char **av)
 		file_name = av[1];
 	}
 	else
-	{
-		fprintf(stderr, "ERR: invalid usage");
-		return ARG_ERR;
-	}
+		ERR(EXIT_FAILURE);
 
 	size_t file_size = get_file_size(file_name);
 	uint8_t *buf = read_entire_file(file_size, file_name);
@@ -38,23 +33,38 @@ int main(int ac, char **av)
 		String *encoded_file = string_init(STRING_CAP);
 		fill_encoded_file(file_size, &maps, encoded_file, buf);
 
-		FILE *outfile = build_outfile(file_name, "_compressed");
+		char *outfile_name = build_outfile_name(file_name, "_compressed");
+		FILE *outfile = build_outfile(outfile_name);
+
 		compress(&freq_table, encoded_file, outfile);
+		report(file_size, get_file_size(outfile_name));
+
 		string_destroy(encoded_file);
 		fclose(outfile);
+		free(outfile_name);
 	}
 	else
 	{
 		uint32_t curr_ptr = parse_header(buf, &freq_table);
 		TreeNode *tree = get_tree(a, &freq_table);
-		FILE *outfile = build_outfile(file_name, "_decompressed");
+
+		char *outfile_name = build_outfile_name(file_name, "_decompressed");
+		FILE *outfile = build_outfile(outfile_name);
+
 		decompress(tree, buf, curr_ptr, file_size, outfile);
+
 		fclose(outfile);
+		free(outfile_name);
 	}
 
 	free(buf);
 	buf = NULL;
 	arena_destroy(a);
+}
+
+void report(size_t file_size, size_t outfile_size)
+{
+	printf("Compression done: deflate %%%.2f\n", 100*(1 - (float)outfile_size/(float)file_size));
 }
 
 void decompress(TreeNode *tree, const uint8_t *buf, uint curr_ptr, size_t file_size, FILE *outfile)
@@ -146,22 +156,22 @@ void fill_encoded_file(size_t file_size, Maps *maps, String *encoded_file, uint8
 	}
 }
 
-FILE *build_outfile(const char *file_name, const char *ext)
+char *build_outfile_name(const char *file_name, const char *ext)
 {
-	size_t file_size = strlen(file_name) + strlen(ext) + 1;
-	char *outfile_name = malloc(file_size);
+	size_t name_length = strlen(file_name) + strlen(ext) + 1;
+	char *outfile_name = malloc(name_length);
 	if (!outfile_name)
 		ERR(MALLOC_ERR);
-
 	strcpy(outfile_name, file_name);
 	strcat(outfile_name, ext);
+	return outfile_name;
+}
 
-	FILE *outfile = fopen(outfile_name, "wb");
+FILE *build_outfile(const char *file_name)
+{
+	FILE *outfile = fopen(file_name, "wb");
 	if (!outfile)
 		ERR(OPEN_ERR);
-
-	free(outfile_name);
-	outfile_name = NULL;
 	return outfile;
 }
 
@@ -192,7 +202,7 @@ void compress(hist_arr *freq_table, String *encoded_file, FILE *outfile)
 		fwrite(&byte, 1, 1, outfile);
 		byte = 0;
 	}
-	// printf("Compression done!\n");
+	rewind(outfile);
 }
 
 size_t get_file_size(const char *file_name)
