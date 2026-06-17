@@ -1,11 +1,19 @@
-# Project Overview: Huffman compression in C
+# A text compression tool written in C
+
+## Usage
+* `make` to build the project
+* `./main <filename>` to compress the `filename` and produce a `filename_compressed`
+* `./main -d <filename_compressed>` to decompress the compressed file to get back the original file
+
+# Project backend
+![diagram](./assets/diagram.png)
+
+### Huffman Tree generated from `hello world` file
+![example tree](./assets/hello.png)
 
 ## Reference:
 * [Wikipedia](https://en.wikipedia.org/wiki/Huffman_coding#Compression)
 * [Stanford](https://web.stanford.edu/class/archive/cs/cs106b/cs106b.1176/assnFiles/assign6/huffman-encoding-supplement.pdf)
-
-### Huffman Tree generated from `hello world` file
-![example tree](./hello.png)
 
 # Implementation Roadmap
 - [x] Implement frequency table of encoded characters
