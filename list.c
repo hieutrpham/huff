@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-Node *create_new_node(struct arena *a, c_freq v) {
+Node *create_new_node(struct Arena *a, c_freq v) {
 	Node *new_node = arena_malloc(a, sizeof(*new_node));
 	new_node->value = v;
 	new_node->next = NULL;
@@ -28,7 +28,7 @@ Node *create_new_node(struct arena *a, c_freq v) {
 
 // this function builds the first queue to be used in Huffman algo.
 // it takes an already sorted frequency table
-Queue *build_queue_from_table(struct arena *a, hist_arr *freq_table) {
+Queue *build_queue_from_table(struct Arena *a, hist_arr *freq_table) {
 	if (freq_table->count == 0)
 		return NULL;
 
@@ -40,7 +40,7 @@ Queue *build_queue_from_table(struct arena *a, hist_arr *freq_table) {
 	return q;
 }
 
-Queue *init_queue(struct arena *a) {
+Queue *init_queue(struct Arena *a) {
 	Queue *q = arena_malloc(a, sizeof(*q));
 	q->back = NULL;
 	q->front = NULL;
