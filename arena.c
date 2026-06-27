@@ -46,6 +46,8 @@ void *arena_malloc(struct Arena* a, uint32_t size)
 			for (uint i = a->active_block_index + 1; i < a->cap; ++i)
 			{
 				new_blocks[i] = malloc(sizeof(*new_blocks[i]));
+				memset(new_blocks[i]->data, 0, sizeof(new_blocks[i]->data)/sizeof(*new_blocks[i]->data));
+				new_blocks[i]->len = 0;
 				if (!new_blocks[i])
 					ERR(MALLOC_ERR);
 			}
