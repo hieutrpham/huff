@@ -1,24 +1,29 @@
+#define ARENA_CAP 1
+#define BLOCK_CAP 4
 #include "main.h"
-#include <stdint.h>
-#include <sys/types.h>
+#include "arena.c"
 
 int main()
 {
-	struct arena* a = arena_init(4);
-	printf("items pointer: %p\n", a->items);
-	void* mem = &a->items[arena_malloc(a, 1)];
-	*(int*)mem = 69;
-	printf("mem before realloc: %d\n", *(int*)mem);
-	printf("arena len: %d\n", a->len);
-	void *mem2 = h_malloc(a, 90);
-	printf("items pointer: %p\n", a->items);
-	printf("mem after realloc: %d\n", *mem);
+	struct Arena* a = arena_init();
+	printf("arena cap: %d - %d\n", ARENA_CAP, a->cap);
+	void *mem = arena_malloc(a, 3);
+	printf("mem: %p\n", mem);
+	void *mem1 = arena_malloc(a, 1);
+	void *mem2 = arena_malloc(a, 1);
+	printf("mem: %p\n", mem);
+	// void *mem1 = arena_malloc(a, 4);
+	void *mem3 = arena_malloc(a, 3);
+	printf("mem3: %p\n", mem3);
 
-	// after reallocation, mem doesn't have the same value
-	printf("arena cap: %d\n", a->cap);
-	// printf("mem2: %p\n", mem2);
-	// printf("arena len: %d\n", a->len);
-	// printf("items pointer: %p\n", a->items);
-	// printf("arena cap: %d\n", a->cap);
+	void *mem4 = arena_malloc(a, 3);
+	printf("mem4: %p\n", mem4);
+
+	void *mem5 = arena_malloc(a, 3);
+	printf("mem5: %p\n", mem5);
+
+	void *mem6 = arena_malloc(a, 3);
+	printf("mem6: %p\n", mem6);
+	printf("arena cap: %d - %d\n", ARENA_CAP, a->cap);
 	arena_destroy(a);
 }

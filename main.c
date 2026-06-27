@@ -22,7 +22,7 @@ int main(int ac, char **av)
 	uint8_t *buf = read_entire_file(file_size, file_name);
 
 	hist_arr freq_table = {0};
-	struct arena *a = arena_init(ARENA_CAP);
+	struct Arena *a = arena_init();
 	if (!is_decompress)
 	{
 		populate_table(buf, &freq_table);
@@ -97,7 +97,7 @@ void decompress(TreeNode *tree, const uint8_t *buf, uint curr_ptr, size_t file_s
 	}
 }
 
-TreeNode *get_tree(struct arena *a, hist_arr *freq_table)
+TreeNode *get_tree(struct Arena *a, hist_arr *freq_table)
 {
 	Queue *initial_q = build_queue_from_table(a, freq_table);
 	Queue *combine_q = init_queue(a);
