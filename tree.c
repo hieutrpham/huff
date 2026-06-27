@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-TreeNode *init_tree_node(struct arena *a) {
+TreeNode *init_tree_node(struct Arena *a) {
 	TreeNode *n = arena_malloc(a, sizeof(*n));
 
 	static size_t tree_node_id = 0;
@@ -60,14 +60,14 @@ TreeNode* dequeue_tree(Queue *q) {
 	return front;
 }
 
-TreeNode *create_tree_node_from_list_node(struct arena *a, Node* n) {
+TreeNode *create_tree_node_from_list_node(struct Arena *a, Node* n) {
 	TreeNode *tree_n = init_tree_node(a);
 	tree_n->weight = n->value.freq;
 	tree_n->c = n->value.c;
 	return tree_n;
 }
 
-void pop_first_two_initial(struct arena *a, Queue *initial, Queue* combined) {
+void pop_first_two_initial(struct Arena *a, Queue *initial, Queue* combined) {
 	Node *i_node = dequeue_list(initial);
 	TreeNode *new_tree_node = init_tree_node(a);
 	new_tree_node->l = create_tree_node_from_list_node(a, i_node);
@@ -79,7 +79,7 @@ void pop_first_two_initial(struct arena *a, Queue *initial, Queue* combined) {
 	enqueue_tree(combined, new_tree_node);
 }
 
-void pop_first_two_combined(struct arena *a, Queue* combined) {
+void pop_first_two_combined(struct Arena *a, Queue* combined) {
 	TreeNode *new_tree_node = init_tree_node(a);
 	TreeNode *temp = dequeue_tree(combined);
 	new_tree_node->l = temp;
@@ -90,7 +90,7 @@ void pop_first_two_combined(struct arena *a, Queue* combined) {
 	enqueue_tree(combined, new_tree_node);
 }
 
-void pop_each(struct arena *a, Queue *initial, Queue* combined) {
+void pop_each(struct Arena *a, Queue *initial, Queue* combined) {
 	TreeNode *new_tree_node = init_tree_node(a);
 	Node *temp = dequeue_list(initial);
 	new_tree_node->l = create_tree_node_from_list_node(a, temp);
@@ -197,7 +197,7 @@ void populate_map(TreeNode* root, char *str, Maps *maps, int level)
 	}
 }
 
-TreeNode *build_huffman_tree(struct arena *a, Queue *initial, Queue* combined) {
+TreeNode *build_huffman_tree(struct Arena *a, Queue *initial, Queue* combined) {
 	if (!initial || !combined)
 		return NULL;
 
