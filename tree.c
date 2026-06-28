@@ -4,7 +4,7 @@
 #include <string.h>
 
 TreeNode *init_tree_node(struct Arena *a) {
-	TreeNode *n = arena_malloc(a, sizeof(*n));
+	TreeNode *n = (TreeNode*)arena_malloc(a, sizeof(*n));
 
 	static size_t tree_node_id = 0;
 	n->l = NULL;
@@ -28,7 +28,7 @@ void enqueue_tree(Queue *q, TreeNode *n) {
 		return;
 	}
 
-	TreeNode *old_back = q->back;
+	TreeNode *old_back = (TreeNode*)q->back;
 	n->next = old_back; // new node is back of queue
 	q->back = n;
 	old_back->prev = n; // back of queue prev node is new node
@@ -40,14 +40,14 @@ void enqueue_tree(Queue *q, TreeNode *n) {
 TreeNode* dequeue_tree(Queue *q) {
 	assert(q);
 	assert(q->len > 0);
-	TreeNode* front = q->front;
+	TreeNode* front = (TreeNode*)q->front;
 	assert(front);
-	TreeNode* back = q->back;
+	TreeNode* back = (TreeNode*)q->back;
 	assert(back);
 
 	if (q->len == 1) {
 		assert(q->front == q->back);
-		TreeNode *n = q->back;
+		TreeNode *n = (TreeNode*)q->back;
 		q->back = NULL;
 		q->front = NULL;
 		q->len--;
@@ -217,8 +217,8 @@ TreeNode *build_huffman_tree(struct Arena *a, Queue *initial, Queue* combined) {
 		assert(!(is_empty(initial) && is_empty(combined)));
 
 		// NOTE: find 2 nodes with the lowest weights
-		TreeNode *combined_front = combined->front;
-		Node *initial_front = initial->front;
+		TreeNode *combined_front = (TreeNode*)combined->front;
+		Node *initial_front = (Node*)initial->front;
 		if (initial->len >= 2 && combined_front->weight >= initial_front->value.freq && combined_front->weight >= initial_front->prev->value.freq) {
 			pop_first_two_initial(a, initial, combined);
 		} else if (initial->len > 0 && combined->len > 0) {

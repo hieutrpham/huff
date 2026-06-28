@@ -107,7 +107,7 @@ typedef struct Queue {
 
 boolean       exist(uint8_t c, hist_arr *hist_a);
 boolean       is_empty(Queue *);
-c_freq        make_freq_test(int, int);
+c_freq        make_freq_test(uint8_t, uint32_t);
 uint8_t       *read_entire_file(size_t file_size, const char *);
 int           compar(const void *, const void *);
 Node          *create_new_node(struct Arena *a, c_freq);

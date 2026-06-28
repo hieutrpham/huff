@@ -5,10 +5,10 @@
 
 String *string_init(uint32_t size)
 {
-	String *str = malloc(sizeof(*str));
+	String *str = (String*)malloc(sizeof(*str));
 	if (!str)
 		ERR(MALLOC_ERR);
-	str->items = calloc(size + 1, sizeof(*str->items));
+	str->items = (char*)calloc(size + 1, sizeof(*str->items));
 	if (!str->items)
 		ERR(MALLOC_ERR);
 	str->len = 0;
@@ -40,7 +40,8 @@ void string_append(String *str, const char *ext)
 		while (str->len + length >= str->cap)
 			str->cap *= 2;
 		new_buffer = realloc(str->items, str->cap);
-		str->items = new_buffer;
+		memset(new_buffer, '\0', str->cap);
+		str->items = (char*)new_buffer;
 		memcpy(&str->items[str->len], ext, length);
 		str->len += length;
 		return;

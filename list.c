@@ -4,7 +4,7 @@
 #include <string.h>
 
 Node *create_new_node(struct Arena *a, c_freq v) {
-	Node *new_node = arena_malloc(a, sizeof(*new_node));
+	Node *new_node = (Node*)arena_malloc(a, sizeof(*new_node));
 	new_node->value = v;
 	new_node->next = NULL;
 	new_node->prev = NULL;
@@ -41,7 +41,7 @@ Queue *build_queue_from_table(struct Arena *a, hist_arr *freq_table) {
 }
 
 Queue *init_queue(struct Arena *a) {
-	Queue *q = arena_malloc(a, sizeof(*q));
+	Queue *q = (Queue*)arena_malloc(a, sizeof(*q));
 	q->back = NULL;
 	q->front = NULL;
 	q->len = 0;
@@ -58,7 +58,7 @@ void enqueue_list(Queue *q, Node *n) {
 		return;
 	}
 
-	Node *old_back = q->back;
+	Node *old_back = (Node*)q->back;
 	n->next = old_back; // new node is back of queue
 	q->back = n;
 	old_back->prev = n; // back of queue prev node is new node
@@ -70,14 +70,14 @@ void enqueue_list(Queue *q, Node *n) {
 Node* dequeue_list(Queue *q) {
 	assert(q);
 	assert(q->len > 0);
-	Node *front = q->front;
+	Node *front = (Node*)q->front;
 	assert(front);
-	Node *back = q->back;
+	Node *back = (Node*)q->back;
 	assert(back);
 
 	if (q->len == 1) {
 		assert(q->front == q->back);
-		Node *n = q->back;
+		Node *n = (Node*)q->back;
 		q->back = NULL;
 		q->front = NULL;
 		q->len--;
@@ -102,7 +102,7 @@ void free_list(Node *root) {
 
 void free_queue(Queue *q) {
 	if (q->len > 0) {
-		free_list(q->back);
+		free_list((Node*)q->back);
 		free(q);
 		return;
 	}
@@ -119,7 +119,7 @@ void print_list(Node *root) {
 
 void print_queue(const Queue *queue, const char *str)
 {
-	Node *n = queue->back;
+	Node *n = (Node*)queue->back;
 	if (queue->len == 0) {
 		printf("Queue %s: [ so empty ]\n", str);
 		fflush(stdout);

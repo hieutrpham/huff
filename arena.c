@@ -4,10 +4,10 @@
 // when the first block is full, increase the arena cap
 struct Arena *arena_init()
 {
-	struct Arena* a = malloc(sizeof(*a));
+	struct Arena* a = (struct Arena*)malloc(sizeof(*a));
 	if (!a)
 		ERR(MALLOC_ERR);
-	a->blocks = malloc(ARENA_CAP * sizeof(*a->blocks));
+	a->blocks = (struct Block**)malloc(ARENA_CAP * sizeof(*a->blocks));
 	if (!a->blocks)
 		ERR(MALLOC_ERR);
 
@@ -16,7 +16,7 @@ struct Arena *arena_init()
 
 	for (uint i = 0; i < a->cap; ++i)
 	{
-		a->blocks[i] = malloc(sizeof(*a->blocks[i]));
+		a->blocks[i] = (struct Block*)malloc(sizeof(*a->blocks[i]));
 		if (!a->blocks[i])
 			ERR(MALLOC_ERR);
 		a->blocks[i]->len = 0;
@@ -39,13 +39,13 @@ void *arena_malloc(struct Arena* a, uint32_t size)
 		{
 			while (a->active_block_index + 1 >= a->cap)
 				a->cap *= 2;
-			struct Block **new_blocks = realloc(a->blocks, a->cap * sizeof(*new_blocks));
+			struct Block **new_blocks = (struct Block**)realloc(a->blocks, a->cap * sizeof(*new_blocks));
 			if (!new_blocks)
 				ERR(MALLOC_ERR);
 
 			for (uint i = a->active_block_index + 1; i < a->cap; ++i)
 			{
-				new_blocks[i] = malloc(sizeof(*new_blocks[i]));
+				new_blocks[i] = (struct Block*)malloc(sizeof(*new_blocks[i]));
 				memset(new_blocks[i]->data, 0, sizeof(new_blocks[i]->data)/sizeof(*new_blocks[i]->data));
 				new_blocks[i]->len = 0;
 				if (!new_blocks[i])

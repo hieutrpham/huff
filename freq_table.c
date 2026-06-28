@@ -2,13 +2,13 @@
 #include <stdint.h>
 #include <sys/types.h>
 
-c_freq make_freq_test(int c, int freq) {
-	return (c_freq){.c = c, .freq = freq};
+c_freq make_freq_test(uint8_t c, uint32_t freq) {
+	return (c_freq){.freq = freq, .c = c};
 }
 
 int compar(const void *one, const void *two) {
-	const c_freq *c1 = one;
-	const c_freq *c2 = two;
+	const c_freq *c1 = (const c_freq*)one;
+	const c_freq *c2 = (const c_freq*)two;
 	return c1->freq <= c2->freq;
 }
 
@@ -24,9 +24,9 @@ void populate_table(uint8_t *buf, hist_arr *freq_table) {
 			}
 		}
 		else
-			freq_table->items[freq_table->count++] = (c_freq){.c = buf[i], .freq = 1};
+			freq_table->items[freq_table->count++] = make_freq_test(buf[i], 1);
 	}
-	freq_table->items[freq_table->count++] = (c_freq){.c = '\r', .freq = 1};
+	freq_table->items[freq_table->count++] = make_freq_test('\r', 1);
 	qsort(freq_table->items, freq_table->count, sizeof(freq_table->items[0]), compar);
 }
 

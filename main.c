@@ -21,13 +21,13 @@ int main(int ac, char **av)
 	size_t file_size = get_file_size(file_name);
 	uint8_t *buf = read_entire_file(file_size, file_name);
 
-	hist_arr freq_table = {0};
+	hist_arr freq_table = {};
 	struct Arena *a = arena_init();
 	if (!is_decompress)
 	{
 		populate_table(buf, &freq_table);
 		TreeNode *tree = get_tree(a, &freq_table);
-		Maps maps = {0};
+		Maps maps = {};
 		fill_maps(tree, &maps);
 
 		String *encoded_file = string_init(STRING_CAP);
@@ -159,7 +159,7 @@ void fill_encoded_file(size_t file_size, Maps *maps, String *encoded_file, uint8
 char *build_outfile_name(const char *file_name, const char *ext)
 {
 	size_t name_length = strlen(file_name) + strlen(ext) + 1;
-	char *outfile_name = malloc(name_length);
+	char *outfile_name = (char*)malloc(name_length);
 	if (!outfile_name)
 		ERR(MALLOC_ERR);
 	strcpy(outfile_name, file_name);
@@ -221,7 +221,7 @@ uint8_t *read_entire_file(size_t file_size, const char *file_name)
 	if (file_fd < 0)
 		ERR(OPEN_ERR);
 
-	uint8_t *buf = calloc(file_size + 1, sizeof(*buf));
+	uint8_t *buf = (uint8_t*)calloc(file_size + 1, sizeof(*buf));
 	if (!buf)
 		ERR(MALLOC_ERR);
 
